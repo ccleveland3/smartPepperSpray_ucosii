@@ -1,11 +1,11 @@
 /**
   ******************************************************************************
   * <h2><center>&copy; COPYRIGHT 2012 Embest Tech. Co., Ltd.</center></h2>
-  * @file    os_cfg.h 
+  * @file    os_cfg.h
   * @author  CMP Team
   * @version V1.0.0
   * @date    28-December-2012
-  * @brief   uc/os-ii configuration file.                       
+  * @brief   uc/os-ii configuration file.
   ******************************************************************************
   * @attention
   *
@@ -25,7 +25,7 @@
 #define OS_ARG_CHK_EN             0    /* Enable (1) or Disable (0) argument checking                  */
 #define OS_CPU_HOOKS_EN           1    /* uC/OS-II hooks are found in the processor port files         */
 
-#define OS_DEBUG_EN               1    /* Enable(1) debug variables                                    */
+#define OS_DEBUG_EN               0    /* Enable(1) debug variables                                    */
 
 #define OS_EVENT_MULTI_EN         1    /* Include code for OSEventPendMulti()                          */
 #define OS_EVENT_NAME_EN          1    /* Enable names for Sem, Mutex, Mbox and Q                      */
