@@ -49,6 +49,7 @@ static  void  App_EventCreate      (void);
 static  void  App_TaskStart        (void    *p_arg);
 static  void  App_TaskKbd          (void    *p_arg);
 static  void  fault_err            (FRESULT rc);
+static void LCD_Display();
 
 /* Private functions ---------------------------------------------------------*/
 /**
@@ -111,6 +112,8 @@ static  void  App_TaskStart (void *p_arg)
   App_TaskCreate();
 
   STM32f4_Discovery_Debug_Init();
+  
+  LCD_Display();
 
       /* mount the filesystem */
   if (f_mount(0, &filesystem) != FR_OK) {
@@ -235,6 +238,44 @@ static  void  App_TaskStart (void *p_arg)
     STM_EVAL_LEDToggle(LED3);
     OSTimeDlyHMSM(0, 0, 0, led_dly_cout);
   }
+}
+
+static void LCD_Display()
+{
+  IOE_Config();
+
+  /* Initialize the LCD */
+  STM32f4_Discovery_LCD_Init();
+	
+  /* Clear the LCD */ 
+  LCD_Clear(LCD_COLOR_MAGENTA);
+	
+  /* Set the LCD Text size */
+  LCD_SetFont(&Font16x24);
+//char array[] = "Insert Email Address";
+//LCD_DisplayStringLine(6, array);
+LCD_DrawRect(12,12,49,64);
+LCD_DisplayChar(12,12,'1');
+LCD_DrawRect(75,12,49,64);
+LCD_DisplayChar(75,12,'2');
+LCD_DrawRect(135,12,49,64);
+LCD_DrawRect(195,12,49,64);
+
+LCD_DrawRect(12,85,49,64);
+LCD_DrawRect(75,85,49,64);
+LCD_DrawRect(135,85,49,64);
+LCD_DrawRect(195,85,49,64);
+
+LCD_DrawRect(12,160,49,64);
+LCD_DrawRect(75,160,49,64);
+LCD_DrawRect(135,160,49,64);
+LCD_DrawRect(195,160,49,64);
+
+  //Lcd_Touch_Calibration();
+
+//  while (1) {
+//    Calibration_Test_Dispose();
+//}
 }
 
 /**
