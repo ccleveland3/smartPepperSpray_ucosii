@@ -197,30 +197,30 @@ static  void  App_TaskStart (void *p_arg)
     }
   }
 
-  /*  directory display test*/
-  OSTimeDlyHMSM(0, 0, 0, 50);
-  printf("Open root directory\n\r");
-  ret = f_opendir(&dir, "");
-  if (ret) {
-    printf("Open root directory error\n\r");
-  } else {
-    printf("Directory listing...\n\r");
-    for (;;) {
-      ret = f_readdir(&dir, &fno);		/* Read a directory item */
-      if (ret || !fno.fname[0]) {
-        break;	/* Error or end of dir */
-      }
-      if (fno.fattrib & AM_DIR) {
-        printf("  <dir>  %s\n\r", fno.fname);
-      } else {
-        printf("%8lu  %s\n\r", fno.fsize, fno.fname);
-      }
-    }
-    if (ret) {
-      printf("Read a directory error\n\r");
-      fault_err(ret);
-    }
-  }
+  /*  directory display test */
+//  OSTimeDlyHMSM(0, 0, 0, 50);
+//  printf("Open root directory\n\r");
+//  ret = f_opendir(&dir, "");
+//  if (ret) {
+//    printf("Open root directory error\n\r");
+//  } else {
+//    printf("Directory listing...\n\r");
+//    for (;;) {
+//      ret = f_readdir(&dir, &fno);		/* Read a directory item */
+//      if (ret || !fno.fname[0]) {
+//        break;	/* Error or end of dir */
+//      }
+//      if (fno.fattrib & AM_DIR) {
+//        printf("  <dir>  %s\n\r", fno.fname);
+//      } else {
+//        printf("%8lu  %s\n\r", fno.fsize, fno.fname);
+//      }
+//    }
+//    if (ret) {
+//      printf("Read a directory error\n\r");
+//      fault_err(ret);
+//    }
+//  }
   OSTimeDlyHMSM(0, 0, 0, 50);
   printf("Test completed\n\r");
 

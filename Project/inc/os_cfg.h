@@ -21,14 +21,14 @@
 #ifndef OS_CFG_H
 #define OS_CFG_H
                                        /* ---------------------- MISCELLANEOUS ----------------------- */
-#define OS_APP_HOOKS_EN           1    /* Application-defined hooks are called from the uC/OS-II hooks */
+#define OS_APP_HOOKS_EN           0    /* Application-defined hooks are called from the uC/OS-II hooks */
 #define OS_ARG_CHK_EN             0    /* Enable (1) or Disable (0) argument checking                  */
 #define OS_CPU_HOOKS_EN           1    /* uC/OS-II hooks are found in the processor port files         */
 
-#define OS_DEBUG_EN               0    /* Enable(1) debug variables                                    */
+#define OS_DEBUG_EN               1    /* Enable(1) debug variables                                    */
 
-#define OS_EVENT_MULTI_EN         1    /* Include code for OSEventPendMulti()                          */
-#define OS_EVENT_NAME_EN          1    /* Enable names for Sem, Mutex, Mbox and Q                      */
+#define OS_EVENT_MULTI_EN         0    /* Include code for OSEventPendMulti()                          */
+#define OS_EVENT_NAME_EN          0    /* Enable names for Sem, Mutex, Mbox and Q                      */
 #define OS_EVENT_NAME_SIZE       16    /* Determine the size of the name of a Sem, Mutex, Mbox or Q    */
 
 #define OS_LOWEST_PRIO           63    /* Defines the lowest priority that can be assigned ...         */
@@ -42,7 +42,7 @@
 
 #define OS_SCHED_LOCK_EN          1    /* Include code for OSSchedLock() and OSSchedUnlock()           */
 
-#define OS_TICK_STEP_EN           1    /* Enable tick stepping feature for uC/OS-View                  */
+#define OS_TICK_STEP_EN           0    /* Enable tick stepping feature for uC/OS-View                  */
 #define OS_TICKS_PER_SEC       1000    /* Set the number of ticks in one second                        */
 
 
@@ -69,7 +69,7 @@
 
 
                                        /* ----------------------- EVENT FLAGS ------------------------ */
-#define OS_FLAG_EN                1    /* Enable (1) or Disable (0) code generation for EVENT FLAGS    */
+#define OS_FLAG_EN                0    /* Enable (1) or Disable (0) code generation for EVENT FLAGS    */
 #define OS_FLAG_ACCEPT_EN         1    /*     Include code for OSFlagAccept()                          */
 #define OS_FLAG_DEL_EN            1    /*     Include code for OSFlagDel()                             */
 #define OS_FLAG_NAME_EN           1    /*     Enable names for event flag group                        */
@@ -80,7 +80,7 @@
 
 
                                        /* -------------------- MESSAGE MAILBOXES --------------------- */
-#define OS_MBOX_EN                1    /* Enable (1) or Disable (0) code generation for MAILBOXES      */
+#define OS_MBOX_EN                0    /* Enable (1) or Disable (0) code generation for MAILBOXES      */
 #define OS_MBOX_ACCEPT_EN         1    /*     Include code for OSMboxAccept()                          */
 #define OS_MBOX_DEL_EN            1    /*     Include code for OSMboxDel()                             */
 #define OS_MBOX_PEND_ABORT_EN     1    /*     Include code for OSMboxPendAbort()                       */
@@ -90,7 +90,7 @@
 
 
                                        /* --------------------- MEMORY MANAGEMENT -------------------- */
-#define OS_MEM_EN                 1    /* Enable (1) or Disable (0) code generation for MEMORY MANAGER */
+#define OS_MEM_EN                 0    /* Enable (1) or Disable (0) code generation for MEMORY MANAGER */
 #define OS_MEM_NAME_EN            1    /*     Enable memory partition names                            */
 #define OS_MEM_NAME_SIZE         16    /*     Determine the size of a memory partition name            */
 #define OS_MEM_QUERY_EN           1    /*     Include code for OSMemQuery()                            */
@@ -132,7 +132,7 @@
 
 
                                        /* --------------------- TIMER MANAGEMENT --------------------- */
-#define OS_TMR_EN                 1    /* Enable (1) or Disable (0) code generation for TIMERS         */
+#define OS_TMR_EN                 0    /* Enable (1) or Disable (0) code generation for TIMERS         */
 #define OS_TMR_CFG_MAX           16    /*     Maximum number of timers                                 */
 #define OS_TMR_CFG_NAME_EN        1    /*     Determine timer names                                    */
 #define OS_TMR_CFG_WHEEL_SIZE     8    /*     Size of timer wheel (#Spokes)                            */
