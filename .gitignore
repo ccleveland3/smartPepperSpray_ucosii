@@ -50,6 +50,8 @@ uCOS-II/Source/*.h
 *.general.xcl
 *.tmp
 *.dbgdt
+*.crun
+*.wspos
 
 
 
