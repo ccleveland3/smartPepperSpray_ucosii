@@ -48,6 +48,7 @@ uCOS-II/Source/*.h
 *.cspy.bat
 *.driver.xcl
 *.general.xcl
+*.tmp
 
 
 
