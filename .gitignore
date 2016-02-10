@@ -38,6 +38,19 @@ Project/EWARM/Discover-More/Obj/*
 uCOS-II/Source/*.c
 uCOS-II/Source/*.h
 
+# iar specific files
+*.dep
+*.ewd
+*.ewp
+*.dni
+*.wsdt
+*.ewt
+*.cspy.bat
+*.driver.xcl
+*.general.xcl
+
+
+
 # =========================
 # Operating System Files
 # =========================
