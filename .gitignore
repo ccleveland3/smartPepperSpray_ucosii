@@ -49,6 +49,7 @@ uCOS-II/Source/*.h
 *.driver.xcl
 *.general.xcl
 *.tmp
+*.dbgdt
 
 
 

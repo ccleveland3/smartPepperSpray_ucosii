@@ -1,11 +1,11 @@
 /**
   ******************************************************************************
   * <h2><center>&copy; COPYRIGHT 2012 Embest Tech. Co., Ltd.</center></h2>
-  * @file    includes.h 
+  * @file    includes.h
   * @author  CMP Team
   * @version V1.0.0
   * @date    28-December-2012
-  * @brief   Library header file.                        
+  * @brief   Library header file.
   ******************************************************************************
   * @attention
   *
@@ -34,6 +34,10 @@
 #include  "stm32f4xx.h"
 #include  "app_cfg.h"
 #include  "bsp.h"
+#include "app_it.h"
+#include "stm32f4_discovery_sdio_sd.h"
+#include "stm32f4_discovery_debug.h"
+#include "ff.h"
 
 #endif /*__INCLUDES_H__*/
 
