@@ -30,6 +30,13 @@
 
 # Debug files
 *.dSYM/
+Project/EWARM/Discover-More/Exe/*
+Project/EWARM/Discover-More/List/*
+Project/EWARM/Discover-More/Obj/*
+
+# uC/OSII Source Files
+uCOS-II/Source/*.c
+uCOS-II/Source/*.h
 
 # =========================
 # Operating System Files
