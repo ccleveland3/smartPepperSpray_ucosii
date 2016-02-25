@@ -101,6 +101,8 @@ static  void  App_TaskStart (void *p_arg)
   /* Initialize external interrupt callbacks */
   itInit();
 
+  sineWave_init();
+
 #if (OS_TASK_STAT_EN > 0)
   /* Determine CPU capacity. */
   OSStatInit();

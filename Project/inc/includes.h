@@ -38,6 +38,7 @@
 #include "stm32f4_discovery_sdio_sd.h"
 #include "stm32f4_discovery_debug.h"
 #include "ff.h"
+#include "sound_output.h"
 
 #endif /*__INCLUDES_H__*/
 
