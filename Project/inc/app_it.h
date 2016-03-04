@@ -9,4 +9,5 @@
 #ifndef __APP_IT_H
 #define __APP_IT_H
 void itInit();
+void DAC_TIM_IRQ();
 #endif
