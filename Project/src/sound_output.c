@@ -10,9 +10,9 @@
 DAC_InitTypeDef  DAC_InitStructure;
 
 const uint16_t Sine12bit[32] = {
-                      2047, 2447, 2831, 3185, 3498, 3750, 3939, 4056, 4095, 4056,
-                      3939, 3750, 3495, 3185, 2831, 2447, 2047, 1647, 1263, 909,
-                      599, 344, 155, 38, 0, 38, 155, 344, 599, 909, 1263, 1647};
+  2047, 2447, 2831, 3185, 3498, 3750, 3939, 4056, 4095, 4056,
+  3939, 3750, 3495, 3185, 2831, 2447, 2047, 1647, 1263, 909,
+  599, 344, 155, 38, 0, 38, 155, 344, 599, 909, 1263, 1647};
 
 extern const unsigned char olaf_wav[];
 
@@ -45,10 +45,10 @@ static void soundOutput_GPIO_Init(void)
 }
 
 /**
-  * @brief  DAC  Channel2 SineWave Configuration
-  * @param  None
-  * @retval None
-  */
+* @brief  DAC  Channel2 SineWave Configuration
+* @param  None
+* @retval None
+*/
 static void DAC_Ch2_SineWaveConfig(void)
 {
   //DMA_InitTypeDef DMA_InitStructure;
@@ -94,12 +94,12 @@ static void DAC_Ch2_SineWaveConfig(void)
 }
 
 /**
-  * @brief  TIM6 Configuration
-  * @note   TIM6 configuration is based on CPU @144MHz and APB1 @36MHz
-  * @note   TIM6 Update event occurs each 36MHz/219 = 164.38 KHz
-  * @param  None
-  * @retval None
-  */
+* @brief  TIM6 Configuration
+* @note   TIM6 configuration is based on CPU @144MHz and APB1 @36MHz
+* @note   TIM6 Update event occurs each 36MHz/219 = 164.38 KHz
+* @param  None
+* @retval None
+*/
 static void TIM6_Config(void)
 {
   TIM_TimeBaseInitTypeDef    TIM_TimeBaseStructure;

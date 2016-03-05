@@ -39,6 +39,8 @@
 #include "stm32f4_discovery_debug.h"
 #include "ff.h"
 #include "sound_output.h"
+#include "waverecorder.h"
+#include "selfTest.h"
 
 #endif /*__INCLUDES_H__*/
 
