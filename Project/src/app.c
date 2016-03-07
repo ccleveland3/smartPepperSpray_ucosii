@@ -93,6 +93,8 @@ int  main (void)
 static  void  App_TaskStart (void *p_arg)
 {
   (void)p_arg;
+  float pfData[3] = {0};
+
   /* Initialize BSP functions. */
   BSP_Init();
   /* Initialize the SysTick. */
@@ -100,7 +102,7 @@ static  void  App_TaskStart (void *p_arg)
   /* Initialize external interrupt callbacks */
   itInit();
 
-  sineWave_init();
+  //sineWave_init();
 
 #if (OS_TASK_STAT_EN > 0)
   /* Determine CPU capacity. */
@@ -119,7 +121,12 @@ static  void  App_TaskStart (void *p_arg)
   }
   OSTimeDlyHMSM(0, 0, 0, 10);
 
-  WaveRecorderUpdate();
+  //WaveRecorderUpdate();
+
+  accelerometerCompassInit();
+  LSM303DLHC_CompassReadAcc(pfData);
+  LSM303DLHC_CompassReadMag(pfData);
+
 
   while (DEF_TRUE)
   {

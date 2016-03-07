@@ -1,15 +1,15 @@
 /**
   ******************************************************************************
-  * @file    stm32f3_discovery_lsm303dlhc.h
+  * @file    stm32f401_discovery_lsm303dlhc.h
   * @author  MCD Application Team
-  * @version V1.1.0
-  * @date    20-September-2012
-  * @brief   This file contains definitions for stm32f3_discovery_lsm303dlhc.c
+  * @version V1.0.0
+  * @date    11-September-2013
+  * @brief   This file contains definitions for stm32f401_discovery_lsm303dlhc.c
   *          firmware driver.
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT 2012 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT 2013 STMicroelectronics</center></h2>
   *
   * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
   * You may not use this file except in compliance with the License.
@@ -28,8 +28,8 @@
 
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32F3_DISCOVERY_LSM303DLHC_H
-#define __STM32F3_DISCOVERY_LSM303DLHC_H
+#ifndef __STM32F401_DISCOVERY_LSM303DLHC_H
+#define __STM32F401_DISCOVERY_LSM303DLHC_H
 
 #ifdef __cplusplus
  extern "C" {
@@ -42,15 +42,15 @@
   * @{
   */
 
-/** @addtogroup STM32F3_DISCOVERY
+/** @addtogroup STM32F401_DISCOVERY
   * @{
   */
 
-/** @addtogroup STM32F3_DISCOVERY_LSM303DLHC
+/** @addtogroup STM32F401_DISCOVERY_LSM303DLHC
   * @{
   */
 
-/** @defgroup STM32F3_DISCOVERY_LSM303DLHC_Exported_Types
+/** @defgroup STM32F401_DISCOVERY_LSM303DLHC_Exported_Types
   * @{
   */
 
@@ -91,14 +91,15 @@ typedef struct
   * @}
   */
 
-/** @defgroup STM32F3_DISCOVERY_LSM303DLHC_Exported_Constants
+/** @defgroup STM32F401_DISCOVERY_LSM303DLHC_Exported_Constants
   * @{
   */
 #define LSM303DLHC_OK                       ((uint32_t) 0)
 #define LSM303DLHC_FAIL                     ((uint32_t) 0)
+#define LSM303DLHC_MAX_COMMUNICATION_FREQ   ((uint32_t) 100000)
 
 /* Uncomment the following line to use the default LSM303DLHC_TIMEOUT_UserCallback()
-   function implemented in stm32f3_discovery_lgd20.c file.
+   function implemented in stm32f401_discovery_lgd20.c file.
    LSM303DLHC_TIMEOUT_UserCallback() function is called whenever a timeout condition
    occure during communication (waiting transmit data register empty flag(TXE)
    or waiting receive data register is not empty flag (RXNE)). */
@@ -117,39 +118,42 @@ typedef struct
 #define LSM303DLHC_I2C                       I2C1
 #define LSM303DLHC_I2C_CLK                   RCC_APB1Periph_I2C1
 
-#define LSM303DLHC_I2C_SCK_PIN               GPIO_Pin_8
-#define LSM303DLHC_I2C_SCK_GPIO_PORT         GPIOB
+#define LSM303DLHC_I2C_SCK_PIN               GPIO_Pin_8                  /* PB.06 */
+#define LSM303DLHC_I2C_SCK_GPIO_PORT         GPIOB                       /* GPIOB */
 #define LSM303DLHC_I2C_SCK_GPIO_CLK          RCC_AHB1Periph_GPIOB
 #define LSM303DLHC_I2C_SCK_SOURCE            GPIO_PinSource8
 #define LSM303DLHC_I2C_SCK_AF                GPIO_AF_I2C1
 
-#define LSM303DLHC_I2C_SDA_PIN               GPIO_Pin_9
-#define LSM303DLHC_I2C_SDA_GPIO_PORT         GPIOB
+#define LSM303DLHC_I2C_SDA_PIN               GPIO_Pin_9                  /* PB.9 */
+#define LSM303DLHC_I2C_SDA_GPIO_PORT         GPIOB                       /* GPIOB */
 #define LSM303DLHC_I2C_SDA_GPIO_CLK          RCC_AHB1Periph_GPIOB
 #define LSM303DLHC_I2C_SDA_SOURCE            GPIO_PinSource9
 #define LSM303DLHC_I2C_SDA_AF                GPIO_AF_I2C1
 
-#define LSM303DLHC_DRDY_PIN                  GPIO_Pin_2
-#define LSM303DLHC_DRDY_GPIO_PORT            GPIOB
+#define LSM303DLHC_DRDY_PIN                  GPIO_Pin_2                  /* PB.02 */
+#define LSM303DLHC_DRDY_GPIO_PORT            GPIOB                       /* GPIOB */
 #define LSM303DLHC_DRDY_GPIO_CLK             RCC_AHB1Periph_GPIOB
 #define LSM303DLHC_DRDY_EXTI_LINE            EXTI_Line2
 #define LSM303DLHC_DRDY_EXTI_PORT_SOURCE     EXTI_PortSourceGPIOB
 #define LSM303DLHC_DRDY_EXTI_PIN_SOURCE      EXTI_PinSource2
+//#define LSM303DLHC_DRDY_EXTI_IRQn            EXTI2_TS_IRQn
 #define LSM303DLHC_DRDY_EXTI_IRQn            EXTI2_IRQn
 
-#define LSM303DLHC_I2C_INT1_PIN              GPIO_Pin_4
-#define LSM303DLHC_I2C_INT1_GPIO_PORT        GPIOB
+
+#define LSM303DLHC_I2C_INT1_PIN              GPIO_Pin_4                  /* PB.04 */
+#define LSM303DLHC_I2C_INT1_GPIO_PORT        GPIOB                       /* GPIOB */
 #define LSM303DLHC_I2C_INT1_GPIO_CLK         RCC_AHB1Periph_GPIOB
 #define LSM303DLHC_I2C_INT1_EXTI_LINE        EXTI_Line4
 #define LSM303DLHC_I2C_INT1_EXTI_PORT_SOURCE EXTI_PortSourceGPIOB
 #define LSM303DLHC_I2C_INT1_EXTI_PIN_SOURCE  EXTI_PinSource4
 #define LSM303DLHC_I2C_INT1_EXTI_IRQn        EXTI4_IRQn
 
-#define LSM303DLHC_I2C_INT2_PIN              GPIO_Pin_5
-#define LSM303DLHC_I2C_INT2_GPIO_PORT        GPIOB
+#define LSM303DLHC_I2C_INT2_PIN              GPIO_Pin_5                  /* PB.05 */
+#define LSM303DLHC_I2C_INT2_GPIO_PORT        GPIOB                       /* GPIOB */
 #define LSM303DLHC_I2C_INT2_GPIO_CLK         RCC_AHB1Periph_GPIOB
 #define LSM303DLHC_I2C_INT2_EXTI_LINE        EXTI_Line5
 #define LSM303DLHC_I2C_INT2_EXTI_PORT_SOURCE EXTI_PortSourceGPIOB
+//#define LSM303DLHC_I2C_INT2_EXTI_PIN_SOURCE  EXTI_PinSource5ss
 #define LSM303DLHC_I2C_INT2_EXTI_PIN_SOURCE  EXTI_PinSource5
 #define LSM303DLHC_I2C_INT2_EXTI_IRQn        EXTI9_5_IRQn
 
@@ -391,9 +395,9 @@ typedef struct
   * @{
   */
 #define LSM303DLHC_OR_COMBINATION          ((uint8_t)0x00)  /*!< OR combination of enabled IRQs */
-#define LSM303DLHC_AND_COMBINATION	       ((uint8_t)0x80)  /*!< AND combination of enabled IRQs */
+#define LSM303DLHC_AND_COMBINATION	   ((uint8_t)0x80)  /*!< AND combination of enabled IRQs */
 #define LSM303DLHC_MOV_RECOGNITION         ((uint8_t)0x40)  /*!< 6D movement recognition */
-#define LSM303DLHC_POS_RECOGNITION	       ((uint8_t)0xC0)  /*!< 6D position recognition */
+#define LSM303DLHC_POS_RECOGNITION	   ((uint8_t)0xC0)  /*!< 6D position recognition */
 /**
   * @}
   */
@@ -402,27 +406,27 @@ typedef struct
   * @{
   */
 #define LSM303DLHC_Z_HIGH                  ((uint8_t)0x20)  /*!< Z High enabled IRQs */
-#define LSM303DLHC_Z_LOW	                 ((uint8_t)0x10)  /*!< Z low enabled IRQs */
+#define LSM303DLHC_Z_LOW	           ((uint8_t)0x10)  /*!< Z low enabled IRQs */
 #define LSM303DLHC_Y_HIGH                  ((uint8_t)0x08)  /*!< Y High enabled IRQs */
-#define LSM303DLHC_Y_LOW	                 ((uint8_t)0x04)  /*!< Y low enabled IRQs */
+#define LSM303DLHC_Y_LOW	           ((uint8_t)0x04)  /*!< Y low enabled IRQs */
 #define LSM303DLHC_X_HIGH                  ((uint8_t)0x02)  /*!< X High enabled IRQs */
-#define LSM303DLHC_X_LOW	                 ((uint8_t)0x01)  /*!< X low enabled IRQs */
+#define LSM303DLHC_X_LOW	           ((uint8_t)0x01)  /*!< X low enabled IRQs */
 /**
   * @}
   */
 
 /** @defgroup Acc_INT_Click
-  * @{
-  */
+* @{
+*/
 #define LSM303DLHC_Z_DOUBLE_CLICK          ((uint8_t)0x20)  /*!< Z double click IRQs */
-#define LSM303DLHC_Z_SINGLE_CLICK	         ((uint8_t)0x10)  /*!< Z single click IRQs */
+#define LSM303DLHC_Z_SINGLE_CLICK	   ((uint8_t)0x10)  /*!< Z single click IRQs */
 #define LSM303DLHC_Y_DOUBLE_CLICK          ((uint8_t)0x08)  /*!< Y double click IRQs */
-#define LSM303DLHC_Y_SINGLE_CLICK	         ((uint8_t)0x04)  /*!< Y single click IRQs */
+#define LSM303DLHC_Y_SINGLE_CLICK	   ((uint8_t)0x04)  /*!< Y single click IRQs */
 #define LSM303DLHC_X_DOUBLE_CLICK          ((uint8_t)0x02)  /*!< X double click IRQs */
-#define LSM303DLHC_X_SINGLE_CLICK	         ((uint8_t)0x01)  /*!< X single click IRQs */
+#define LSM303DLHC_X_SINGLE_CLICK	   ((uint8_t)0x01)  /*!< X single click IRQs */
 /**
-  * @}
-  */
+* @}
+*/
 
 /** @defgroup Acc_INT1_Interrupt_status
   * @{
@@ -512,7 +516,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup STM32F3_DISCOVERY_LSM303DLHC_Exported_Functions
+/** @defgroup STM32F401_DISCOVERY_LSM303DLHC_Exported_Functions
   * @{
   */
 /* Acc functions */
@@ -533,8 +537,16 @@ void LSM303DLHC_MagInit(LSM303DLHCMag_InitTypeDef *LSM303DLHC_InitStruct);
 uint8_t LSM303DLHC_MagGetDataStatus(void);
 
 /* read write funtions */
-uint16_t LSM303DLHC_Write(uint8_t DeviceAddr, uint8_t RegAddr, uint8_t* pBuffer);
-uint16_t LSM303DLHC_Read(uint8_t DeviceAddr, uint8_t RegAddr,uint8_t* pBuffer, uint16_t NumByteToRead);
+//uint16_t LSM303DLHC_Write(uint8_t DeviceAddr, uint8_t RegAddr, uint8_t* pBuffer);
+//uint16_t LSM303DLHC_Read(uint8_t DeviceAddr, uint8_t RegAddr,uint8_t* pBuffer, uint16_t NumByteToRead);
+//uint32_t LSM303DLHC_Read(uint8_t* pBuffer, uint16_t ReadAddr, uint16_t* NumByteToRead);
+uint16_t LSM303DLHC_Read(uint8_t DeviceAddr, uint8_t RegisterAddr,
+                              uint16_t NumByteToRead,
+                              uint8_t* pBuffer);
+uint16_t LSM303DLHC_Write(uint8_t DeviceAddr, uint8_t RegisterAddr,
+                               uint16_t NumByteToWrite,
+                               uint8_t* pBuffer);
+void LSM303DLHC_I2C_Config(void);
 
 /* USER Callbacks: This is function for which prototype only is declared in
    MEMS accelerometre driver and that should be implemented into user applicaiton. */
@@ -542,7 +554,7 @@ uint16_t LSM303DLHC_Read(uint8_t DeviceAddr, uint8_t RegAddr,uint8_t* pBuffer, u
    occure during communication (waiting transmit data register empty flag(TXE)
    or waiting receive data register is not empty flag (RXNE)).
    You can use the default timeout callback implementation by uncommenting the
-   define USE_DEFAULT_TIMEOUT_CALLBACK in stm32f3_discovery_LSM303DLHC.h file.
+   define USE_DEFAULT_TIMEOUT_CALLBACK in stm32f401_discovery_LSM303DLHC.h file.
    Typically the user implementation of this callback should reset MEMS peripheral
    and re-initialize communication or in worst case reset all the application. */
 uint32_t LSM303DLHC_TIMEOUT_UserCallback(void);
@@ -551,7 +563,7 @@ uint32_t LSM303DLHC_TIMEOUT_UserCallback(void);
 }
 #endif
 
-#endif /* __STM32F3_DISCOVERY_LSM303DLHC_H */
+#endif /* __STM32F401_DISCOVERY_LSM303DLHC_H */
 /**
   * @}
   */

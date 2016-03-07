@@ -41,6 +41,9 @@
 #include "sound_output.h"
 #include "waverecorder.h"
 #include "selfTest.h"
+//#include "stm32f3_discovery_lsm303dlhc.h"
+#include "stm32f401_discovery_lsm303dlhc.h"
+#include "accelerometer.h"
 
 #endif /*__INCLUDES_H__*/
 

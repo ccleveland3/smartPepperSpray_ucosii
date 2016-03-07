@@ -1,15 +1,15 @@
 /**
   ******************************************************************************
-  * @file    stm32f3_discovery_lsm303dlhc.c
+  * @file    stm32f401_discovery_lsm303dlhc.c
   * @author  MCD Application Team
-  * @version V1.1.0
-  * @date    20-September-2012
+  * @version V1.0.0
+  * @date    11-September-2013
   * @brief   This file provides a set of functions needed to manage the lsm303dlhc
-  *          MEMS accelerometer available on STM32F3-Discovery Kit.
+  *          MEMS accelerometer available on STM32F401-Discovery Kit.
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT 2012 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT 2013 STMicroelectronics</center></h2>
   *
   * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
   * You may not use this file except in compliance with the License.
@@ -26,31 +26,22 @@
   ******************************************************************************
   */
 /* Includes ------------------------------------------------------------------*/
-#include <includes.h>
-#include "stm32f3_discovery_lsm303dlhc.h"
+#include "stm32f401_discovery_lsm303dlhc.h"
 
 /** @addtogroup Utilities
   * @{
   */
 
-/** @addtogroup STM32F3_DISCOVERY
+/** @addtogroup STM32F401_DISCOVERY
   * @{
   */
 
-/** @addtogroup STM32F3_DISCOVERY_LSM303DLHC
+/** @addtogroup STM32F401_DISCOVERY_LSM303DLHC
   * @{
   */
 
 
-/** @defgroup STM32F3_DISCOVERY_LSM303DLHC_Private_TypesDefinitions
-  * @{
-  */
-
-/**
-  * @}
-  */
-
-/** @defgroup STM32F3_DISCOVERY_LSM303DLHC_Private_Defines
+/** @defgroup STM32F401_DISCOVERY_LSM303DLHC_Private_TypesDefinitions
   * @{
   */
 
@@ -58,7 +49,7 @@
   * @}
   */
 
-/** @defgroup STM32F3_DISCOVERY_LSM303DLHC_Private_Macros
+/** @defgroup STM32F401_DISCOVERY_LSM303DLHC_Private_Defines
   * @{
   */
 
@@ -66,15 +57,24 @@
   * @}
   */
 
-/** @defgroup STM32F3_DISCOVERY_LSM303DLHC_Private_Variables
+/** @defgroup STM32F401_DISCOVERY_LSM303DLHC_Private_Macros
+  * @{
+  */
+
+/**
+  * @}
+  */
+
+/** @defgroup STM32F401_DISCOVERY_LSM303DLHC_Private_Variables
   * @{
   */
 __IO uint32_t  LSM303DLHC_Timeout = LSM303DLHC_LONG_TIMEOUT;
+__IO uint16_t  LSM303DLHC_Address = 0;
 /**
   * @}
   */
 
-/** @defgroup STM32F3_DISCOVERY_LSM303DLHC_Private_FunctionPrototypes
+/** @defgroup STM32F401_DISCOVERY_LSM303DLHC_Private_FunctionPrototypes
   * @{
   */
 static void LSM303DLHC_LowLevel_Init(void);
@@ -82,7 +82,7 @@ static void LSM303DLHC_LowLevel_Init(void);
   * @}
   */
 
-/** @defgroup STM32F3_DISCOVERY_LSM303DLHC_Private_Functions
+/** @defgroup STM32F401_DISCOVERY_LSM303DLHC_Private_Functions
   * @{
   */
 
@@ -107,10 +107,10 @@ void LSM303DLHC_AccInit(LSM303DLHCAcc_InitTypeDef *LSM303DLHC_InitStruct)
                     LSM303DLHC_InitStruct->AccFull_Scale|LSM303DLHC_InitStruct->High_Resolution);
 
   /* Write value to ACC MEMS CTRL_REG1 regsister */
-  LSM303DLHC_Write(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG1_A, &ctrl1);
+  LSM303DLHC_Write(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG1_A, 1, &ctrl1);
 
   /* Write value to ACC MEMS CTRL_REG4 regsister */
-  LSM303DLHC_Write(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG4_A, &ctrl4);
+  LSM303DLHC_Write(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG4_A, 1, &ctrl4);
 }
 
 /**
@@ -123,13 +123,13 @@ void LSM303DLHC_AccRebootCmd(void)
   uint8_t tmpreg;
 
   /* Read CTRL_REG5 register */
-  LSM303DLHC_Read(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG5_A, &tmpreg, 1);
+  LSM303DLHC_Read(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG5_A, 1, &tmpreg);
 
   /* Enable or Disable the reboot memory */
   tmpreg |= LSM303DLHC_BOOT_REBOOTMEMORY;
 
   /* Write value to ACC MEMS CTRL_REG5 regsister */
-  LSM303DLHC_Write(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG5_A, &tmpreg);
+  LSM303DLHC_Write(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG5_A, 1, &tmpreg);
 }
 
 /**
@@ -143,7 +143,7 @@ void LSM303DLHC_AccFilterConfig(LSM303DLHCAcc_FilterConfigTypeDef *LSM303DLHC_Fi
   uint8_t tmpreg;
 
   /* Read CTRL_REG2 register */
-  LSM303DLHC_Read(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG2_A, &tmpreg, 1);
+  LSM303DLHC_Read(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG2_A, 1, &tmpreg);
 
   tmpreg &= 0x0C;
 
@@ -154,7 +154,7 @@ void LSM303DLHC_AccFilterConfig(LSM303DLHCAcc_FilterConfigTypeDef *LSM303DLHC_Fi
                       LSM303DLHC_FilterStruct->HighPassFilter_AOI2);
 
   /* Write value to ACC MEMS CTRL_REG2 regsister */
-  LSM303DLHC_Write(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG2_A, &tmpreg);
+  LSM303DLHC_Write(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG2_A, 1, &tmpreg);
 }
 
 /**
@@ -170,14 +170,14 @@ void LSM303DLHC_AccFilterCmd(uint8_t HighPassFilterState)
   uint8_t tmpreg;
 
   /* Read CTRL_REG2 register */
-  LSM303DLHC_Read(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG2_A, &tmpreg, 1);
+  LSM303DLHC_Read(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG2_A, 1, &tmpreg);
 
   tmpreg &= 0xF7;
 
   tmpreg |= HighPassFilterState;
 
   /* Write value to ACC MEMS CTRL_REG2 regsister */
-  LSM303DLHC_Write(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG2_A, &tmpreg);
+  LSM303DLHC_Write(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG2_A, 1, &tmpreg);
 }
 
 /**
@@ -193,14 +193,14 @@ void LSM303DLHC_AccFilterClickCmd(uint8_t HighPassFilterClickState)
   uint8_t tmpreg;
 
   /* Read CTRL_REG2 register */
-  LSM303DLHC_Read(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG2_A, &tmpreg, 1);
+  LSM303DLHC_Read(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG2_A, 1, &tmpreg);
 
   tmpreg &= 0xFB;
 
   tmpreg |= HighPassFilterClickState;
 
   /* Write value to ACC MEMS CTRL_REG2 regsister */
-  LSM303DLHC_Write(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG2_A, &tmpreg);
+  LSM303DLHC_Write(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG2_A, 1, &tmpreg);
 }
 
 /**
@@ -222,7 +222,7 @@ void LSM303DLHC_AccIT1Config(uint8_t LSM303DLHC_IT, FunctionalState NewState)
   uint8_t tmpval = 0x00;
 
   /* Read CTRL_REG3 register */
-  LSM303DLHC_Read(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG3_A, &tmpval, 1 );
+  LSM303DLHC_Read(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG3_A, 1, &tmpval);
 
   tmpval &= ~LSM303DLHC_IT;
 
@@ -237,7 +237,7 @@ void LSM303DLHC_AccIT1Config(uint8_t LSM303DLHC_IT, FunctionalState NewState)
   }
 
   /* Write value to MEMS CTRL_REG3 register */
-  LSM303DLHC_Write(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG3_A, &tmpval);
+  LSM303DLHC_Write(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG3_A, 1, &tmpval);
 }
 
 /**
@@ -259,7 +259,7 @@ void LSM303DLHC_AccIT2Config(uint8_t LSM303DLHC_IT, FunctionalState NewState)
   uint8_t tmpval = 0x00;
 
   /* Read CTRL_REG3 register */
-  LSM303DLHC_Read(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG6_A, &tmpval, 1);
+  LSM303DLHC_Read(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG6_A, 1, &tmpval);
 
   tmpval &= ~LSM303DLHC_IT;
 
@@ -274,7 +274,7 @@ void LSM303DLHC_AccIT2Config(uint8_t LSM303DLHC_IT, FunctionalState NewState)
   }
 
   /* Write value to MEMS CTRL_REG3 register */
-  LSM303DLHC_Write(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG6_A, &tmpval);
+  LSM303DLHC_Write(ACC_I2C_ADDRESS, LSM303DLHC_CTRL_REG6_A, 1, &tmpval);
 }
 
 /**
@@ -289,7 +289,7 @@ void LSM303DLHC_AccINT1InterruptConfig(uint8_t ITCombination, uint8_t ITAxes, Fu
   uint8_t tmpval = ITCombination;
 
   /* Read INT1_CFR register */
-  LSM303DLHC_Read(ACC_I2C_ADDRESS, LSM303DLHC_INT1_CFG_A, &tmpval, 1);
+  LSM303DLHC_Read(ACC_I2C_ADDRESS, LSM303DLHC_INT1_CFG_A, 1, &tmpval);
 
   if (NewState != DISABLE)
   {
@@ -302,7 +302,7 @@ void LSM303DLHC_AccINT1InterruptConfig(uint8_t ITCombination, uint8_t ITAxes, Fu
   }
 
   /* Write value to MEMS INT1_CFR register */
-  LSM303DLHC_Write(ACC_I2C_ADDRESS, LSM303DLHC_INT1_CFG_A, &tmpval);
+  LSM303DLHC_Write(ACC_I2C_ADDRESS, LSM303DLHC_INT1_CFG_A, 1, &tmpval);
 }
 
 /**
@@ -317,7 +317,7 @@ void LSM303DLHC_AccINT2InterruptConfig(uint8_t ITCombination, uint8_t ITAxes, Fu
   uint8_t tmpval = ITCombination;
 
   /* Read INT2_CFR register */
-  LSM303DLHC_Read(ACC_I2C_ADDRESS, LSM303DLHC_INT2_CFG_A, &tmpval, 1);
+  LSM303DLHC_Read(ACC_I2C_ADDRESS, LSM303DLHC_INT2_CFG_A, 1, &tmpval);
 
   if (NewState != DISABLE)
   {
@@ -330,7 +330,7 @@ void LSM303DLHC_AccINT2InterruptConfig(uint8_t ITCombination, uint8_t ITAxes, Fu
   }
 
   /* Write value to MEMS INT2_CFR register */
-  LSM303DLHC_Write(ACC_I2C_ADDRESS, LSM303DLHC_INT2_CFG_A, &tmpval);
+  LSM303DLHC_Write(ACC_I2C_ADDRESS, LSM303DLHC_INT2_CFG_A, 1, &tmpval);
 }
 
 /**
@@ -345,7 +345,7 @@ void LSM303DLHC_AccClickITConfig(uint8_t ITClick, FunctionalState NewState)
   uint8_t tmpval;
 
   /* Read CLICK_CFR register */
-  LSM303DLHC_Read(ACC_I2C_ADDRESS, LSM303DLHC_CLICK_CFG_A, &tmpval, 1);
+  LSM303DLHC_Read(ACC_I2C_ADDRESS, LSM303DLHC_CLICK_CFG_A, 1, &tmpval);
 
   if (NewState != DISABLE)
   {
@@ -358,7 +358,7 @@ void LSM303DLHC_AccClickITConfig(uint8_t ITClick, FunctionalState NewState)
   }
 
   /* Write value to MEMS CLICK_CFR register */
-  LSM303DLHC_Write(ACC_I2C_ADDRESS, LSM303DLHC_CLICK_CFG_A, &tmpval);
+  LSM303DLHC_Write(ACC_I2C_ADDRESS, LSM303DLHC_CLICK_CFG_A, 1, &tmpval);
 }
 
 /**
@@ -371,7 +371,7 @@ uint8_t LSM303DLHC_AccGetDataStatus(void)
   uint8_t tmpreg;
 
   /* Read Mag STATUS register */
-  LSM303DLHC_Read(ACC_I2C_ADDRESS, LSM303DLHC_STATUS_REG_A, &tmpreg, 1);
+  LSM303DLHC_Read(ACC_I2C_ADDRESS, LSM303DLHC_STATUS_REG_A, 1, &tmpreg);
 
   return tmpreg;
 }
@@ -399,13 +399,13 @@ void LSM303DLHC_MagInit(LSM303DLHCMag_InitTypeDef *LSM303DLHC_InitStruct)
   mr_regm |= (uint8_t) (LSM303DLHC_InitStruct->Working_Mode);
 
   /* Write value to Mag MEMS CRA_REG regsister */
-  LSM303DLHC_Write(MAG_I2C_ADDRESS, LSM303DLHC_CRA_REG_M, &cra_regm);
+  LSM303DLHC_Write(MAG_I2C_ADDRESS, LSM303DLHC_CRA_REG_M, 1, &cra_regm);
 
   /* Write value to Mag MEMS CRB_REG regsister */
-  LSM303DLHC_Write(MAG_I2C_ADDRESS, LSM303DLHC_CRB_REG_M, &crb_regm);
+  LSM303DLHC_Write(MAG_I2C_ADDRESS, LSM303DLHC_CRB_REG_M, 1, &crb_regm);
 
   /* Write value to Mag MEMS MR_REG regsister */
-  LSM303DLHC_Write(MAG_I2C_ADDRESS, LSM303DLHC_MR_REG_M, &mr_regm);
+  LSM303DLHC_Write(MAG_I2C_ADDRESS, LSM303DLHC_MR_REG_M, 1, &mr_regm);
 }
 
 /**
@@ -418,220 +418,349 @@ uint8_t LSM303DLHC_MagGetDataStatus(void)
   uint8_t tmpreg;
 
   /* Read Mag STATUS register */
-  LSM303DLHC_Read(MAG_I2C_ADDRESS, LSM303DLHC_SR_REG_M, &tmpreg, 1 );
+  LSM303DLHC_Read(MAG_I2C_ADDRESS, LSM303DLHC_SR_REG_M, 1, &tmpreg);
 
   return tmpreg;
+}
+
+/**
+  * @brief  Reads a block of data from the LSM303DLHC.
+  * @param  DeviceAddr : specifies the slave address to be programmed(ACC_I2C_ADDRESS or MAG_I2C_ADDRESS).
+  * @param  RegisterAddr : specifies the LSM303DLHC internal address register to read from.
+  * @param  NumByteToRead : number of bytes to read from the LSM303DLH ( NumByteToRead >1  only for the Mgnetometer readinf).
+  * @param  pBuffer : pointer to the buffer that receives the data read from the LSM303DLH.
+  * @retval LSM303DLHC register value
+  */
+uint16_t LSM303DLHC_Read(uint8_t DeviceAddr, uint8_t RegisterAddr,
+                              uint16_t NumByteToRead,
+                              uint8_t* pBuffer)
+{
+  __IO uint32_t LSM303DLHC_Timeout = LSM303DLHC_LONG_TIMEOUT;
+  __IO uint32_t temp;
+
+  LSM303DLHC_I2C_Config();
+
+restart:
+
+  LSM303DLHC_Timeout = LSM303DLHC_LONG_TIMEOUT;
+/* Send START condition */
+  I2C_GenerateSTART(LSM303DLHC_I2C, ENABLE);
+  /* Test on EV5 and clear it */
+  while (!I2C_CheckEvent(LSM303DLHC_I2C, I2C_EVENT_MASTER_MODE_SELECT))
+  {
+    if (LSM303DLHC_Timeout-- == 0)
+      return ERROR;
+  }
+
+  LSM303DLHC_Timeout = LSM303DLHC_LONG_TIMEOUT;
+  /* Send slave address for read */
+  I2C_Send7bitAddress(LSM303DLHC_I2C, DeviceAddr, I2C_Direction_Transmitter);
+
+  while (!I2C_CheckEvent(LSM303DLHC_I2C,I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
+  {
+    if (LSM303DLHC_Timeout-- == 0)
+    {
+      I2C_ClearFlag(LSM303DLHC_I2C,I2C_FLAG_BUSY|I2C_FLAG_AF);
+      goto restart;
+    }
+  }
+  /* Clear EV6 by setting again the PE bit */
+  I2C_Cmd(LSM303DLHC_I2C, ENABLE);
+
+  I2C_SendData(LSM303DLHC_I2C, RegisterAddr);
+
+  /* Test on EV8 and clear it */
+  LSM303DLHC_Timeout = LSM303DLHC_LONG_TIMEOUT;
+  while (!I2C_CheckEvent(LSM303DLHC_I2C, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
+  {
+    if (LSM303DLHC_Timeout-- == 0)
+     return ERROR;
+  }
+
+  if (NumByteToRead == 0x01)
+  {
+    restart3:
+    /* Send START condition */
+    I2C_GenerateSTART(LSM303DLHC_I2C, ENABLE);
+    while (!I2C_CheckEvent(LSM303DLHC_I2C, I2C_EVENT_MASTER_MODE_SELECT));
+    /* Send Slave address for read */
+    I2C_Send7bitAddress(LSM303DLHC_I2C, DeviceAddr, I2C_Direction_Receiver);
+    /* Wait until ADDR is set */
+    LSM303DLHC_Timeout = LSM303DLHC_LONG_TIMEOUT;
+    while (!I2C_GetFlagStatus(LSM303DLHC_I2C, I2C_FLAG_ADDR))
+    {
+      if (LSM303DLHC_Timeout-- == 0)
+      {
+        I2C_ClearFlag(LSM303DLHC_I2C,I2C_FLAG_BUSY|I2C_FLAG_AF);
+        goto restart3;
+      }
+    }
+    /* Clear ACK */
+    I2C_AcknowledgeConfig(LSM303DLHC_I2C, DISABLE);
+    __disable_irq();
+    /* Clear ADDR flag */
+    temp = LSM303DLHC_I2C->SR2;
+    /* Program the STOP */
+    I2C_GenerateSTOP(LSM303DLHC_I2C, ENABLE);
+    __enable_irq();
+    while ((I2C_GetLastEvent(LSM303DLHC_I2C) & 0x0040) != 0x000040); /* Poll on RxNE */
+    /* Read the data */
+    *pBuffer = I2C_ReceiveData(LSM303DLHC_I2C);
+    /* Make sure that the STOP bit is cleared by Hardware before CR1 write access */
+    while ((LSM303DLHC_I2C->CR1&0x200) == 0x200);
+    /* Enable Acknowledgement to be ready for another reception */
+    I2C_AcknowledgeConfig(LSM303DLHC_I2C, ENABLE);
+
+    return SUCCESS;
+  }
+  else
+    if(NumByteToRead == 0x02)
+    {
+      restart4:
+      /* Send START condition */
+      I2C_GenerateSTART(LSM303DLHC_I2C, ENABLE);
+      while (!I2C_CheckEvent(LSM303DLHC_I2C, I2C_EVENT_MASTER_MODE_SELECT));
+      /* Send EEPROM address for read */
+      I2C_Send7bitAddress(LSM303DLHC_I2C, DeviceAddr, I2C_Direction_Receiver);
+      LSM303DLHC_I2C->CR1 = 0xC01; /* ACK=1; POS =1 */
+      LSM303DLHC_Timeout = LSM303DLHC_LONG_TIMEOUT;
+      while (!I2C_GetFlagStatus(LSM303DLHC_I2C, I2C_FLAG_ADDR))
+      {
+        if (LSM303DLHC_Timeout-- == 0)
+        {
+          I2C_ClearFlag(LSM303DLHC_I2C,I2C_FLAG_BUSY|I2C_FLAG_AF);
+          goto restart4;
+        }
+      }
+      __disable_irq();
+      /* Clear ADDR */
+      temp = LSM303DLHC_I2C->SR2;
+      /* Disable ACK */
+      I2C_AcknowledgeConfig(LSM303DLHC_I2C, DISABLE);
+      __enable_irq();
+      while ((I2C_GetLastEvent(LSM303DLHC_I2C) & 0x0004) != 0x00004); /* Poll on BTF */
+       __disable_irq();
+      /* Program the STOP */
+      I2C_GenerateSTOP(LSM303DLHC_I2C, ENABLE);
+      /* Read first data */
+      *pBuffer = LSM303DLHC_I2C->DR;
+      pBuffer++;
+      /* Read second data */
+      *pBuffer = LSM303DLHC_I2C->DR;
+      __enable_irq();
+      LSM303DLHC_I2C->CR1 = 0x0401; /* POS = 0, ACK = 1, PE = 1 */
+
+      return SUCCESS;
+    }
+  else
+  {
+restart2:
+    LSM303DLHC_Timeout = LSM303DLHC_LONG_TIMEOUT;
+    /* Send START condition */
+    I2C_GenerateSTART(LSM303DLHC_I2C, ENABLE);
+    /* Test on EV5 and clear it */
+    while (!I2C_CheckEvent(LSM303DLHC_I2C, I2C_EVENT_MASTER_MODE_SELECT))
+    {
+      if (LSM303DLHC_Timeout-- == 0)
+        return ERROR;
+    }
+    LSM303DLHC_Timeout = LSM303DLHC_LONG_TIMEOUT;
+    /* Send slave address for read */
+    I2C_Send7bitAddress(LSM303DLHC_I2C,  DeviceAddr, I2C_Direction_Receiver);
+    while (!I2C_CheckEvent(LSM303DLHC_I2C, I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED))
+    {
+
+      if (LSM303DLHC_Timeout-- == 0)
+      {
+        I2C_ClearFlag(LSM303DLHC_I2C,I2C_FLAG_BUSY|I2C_FLAG_AF);
+        goto restart2;
+      }
+    }
+
+    /* While there is data to be read; here the safe procedure is implemented */
+    while (NumByteToRead)
+    {
+
+      if (NumByteToRead != 3) /* Receive bytes from first byte until byte N-3 */
+      {
+        while ((I2C_GetLastEvent(LSM303DLHC_I2C) & 0x00004) != 0x000004); /* Poll on BTF */
+        /* Read data */
+        *pBuffer = I2C_ReceiveData(LSM303DLHC_I2C);
+        pBuffer++;
+        /* Decrement the read bytes counter */
+        NumByteToRead--;
+      }
+
+      if (NumByteToRead == 3)  /* it remains to read three data: data N-2, data N-1, Data N */
+      {
+
+        /* Data N-2 in DR and data N -1 in shift register */
+        while ((I2C_GetLastEvent(LSM303DLHC_I2C) & 0x000004) != 0x0000004); /* Poll on BTF */
+        /* Clear ACK */
+        I2C_AcknowledgeConfig(LSM303DLHC_I2C, DISABLE);
+        __disable_irq();
+        /* Read Data N-2 */
+        *pBuffer = I2C_ReceiveData(LSM303DLHC_I2C);
+        pBuffer++;
+        /* Program the STOP */
+        I2C_GenerateSTOP(LSM303DLHC_I2C, ENABLE);
+        /* Read DataN-1 */
+        *pBuffer = I2C_ReceiveData(LSM303DLHC_I2C);
+        __enable_irq();
+        pBuffer++;
+        while ((I2C_GetLastEvent(LSM303DLHC_I2C) & 0x00000040) != 0x0000040); /* Poll on RxNE */
+        /* Read DataN */
+        *pBuffer = LSM303DLHC_I2C->DR;
+        /* Reset the number of bytes to be read by master */
+        NumByteToRead = 0;
+      }
+    }
+    /* Make sure that the STOP bit is cleared by Hardware before CR1 write access */
+    while ((LSM303DLHC_I2C->CR1&0x200) == 0x200);
+    /* Enable Acknowledgement to be ready for another reception */
+    I2C_AcknowledgeConfig(LSM303DLHC_I2C, ENABLE);
+
+    return SUCCESS;
+  }
 }
 
 /**
   * @brief  Writes one byte to the LSM303DLHC.
   * @param  DeviceAddr : specifies the slave address to be programmed.
   * @param  RegAddr : specifies the LSM303DLHC register to be written.
+  * @param NumByteToRead: Number of bytes to be sent to the slave.
   * @param  pBuffer : pointer to the buffer  containing the data to be written to the LSM303DLH.
   * @retval LSM303DLHC Status
-  */
-uint16_t LSM303DLHC_Write(uint8_t DeviceAddr, uint8_t RegAddr, uint8_t* pBuffer)
+ */
+uint16_t LSM303DLHC_Write(uint8_t DeviceAddr, uint8_t RegisterAddr,
+                               uint16_t NumByteToWrite,
+                               uint8_t* pBuffer)
 {
-  /* Test on BUSY Flag */
-  LSM303DLHC_Timeout = LSM303DLHC_LONG_TIMEOUT;
-  //while(I2C_GetFlagStatus(LSM303DLHC_I2C, I2C_ISR_BUSY) != RESET)
-  while(I2C_GetFlagStatus(LSM303DLHC_I2C, I2C_FLAG_BUSY) != RESET)
-  {
-    if((LSM303DLHC_Timeout--) == 0) return LSM303DLHC_TIMEOUT_UserCallback();
-  }
 
-  /* Configure slave address, nbytes, reload, end mode and start or stop generation */
-  //I2C_TransferHandling(LSM303DLHC_I2C, DeviceAddr, 1, I2C_Reload_Mode, I2C_Generate_Start_Write);
+  LSM303DLHC_I2C_Config();
+
+  restart1:
+  LSM303DLHC_Timeout = LSM303DLHC_LONG_TIMEOUT;
+  /* Send START condition */
   I2C_GenerateSTART(LSM303DLHC_I2C, ENABLE);
-
-  LSM303DLHC_Timeout = LSM303DLHC_LONG_TIMEOUT;
+  /* Test on EV5 and clear it */
   while (!I2C_CheckEvent(LSM303DLHC_I2C, I2C_EVENT_MASTER_MODE_SELECT))
   {
-    if((LSM303DLHC_Timeout--) == 0) return LSM303DLHC_TIMEOUT_UserCallback();
+    if (LSM303DLHC_Timeout-- == 0) return ERROR;
   }
-
-  /* Transmit the slave address and enable writing operation */
+  /* Send slave address for write */
   I2C_Send7bitAddress(LSM303DLHC_I2C, DeviceAddr, I2C_Direction_Transmitter);
 
-  /* Wait until TXIS flag is set */
   LSM303DLHC_Timeout = LSM303DLHC_LONG_TIMEOUT;
-  //while(I2C_GetFlagStatus(LSM303DLHC_I2C, I2C_ISR_TXIS) == RESET)
+  /* Test on EV6 and clear it */
   while (!I2C_CheckEvent(LSM303DLHC_I2C, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
   {
-    if((LSM303DLHC_Timeout--) == 0) return LSM303DLHC_TIMEOUT_UserCallback();
+
+    if (LSM303DLHC_Timeout-- == 0)
+    {
+      I2C_ClearFlag(LSM303DLHC_I2C,I2C_FLAG_BUSY|I2C_FLAG_AF);
+      goto restart1;
+    }
   }
 
-  /* Send Register address */
-  I2C_SendData(LSM303DLHC_I2C, (uint8_t)RegAddr);
-
-  /* Wait until TCR flag is set */
   LSM303DLHC_Timeout = LSM303DLHC_LONG_TIMEOUT;
-  //while(I2C_GetFlagStatus(LSM303DLHC_I2C, I2C_ISR_TCR) == RESET)
-  while (!I2C_CheckEvent(LSM303DLHC_I2C, I2C_EVENT_MASTER_BYTE_TRANSMITTING))
-  {
-    if((LSM303DLHC_Timeout--) == 0) return LSM303DLHC_TIMEOUT_UserCallback();
-  }
 
-  /* Configure slave address, nbytes, reload, end mode and start or stop generation */
-  //I2C_TransferHandling(LSM303DLHC_I2C, DeviceAddr, 1, I2C_AutoEnd_Mode, I2C_No_StartStop);
-  /* Write data to TXDR */
+  /* Transmit the first address for r/w operations */
+  I2C_SendData(LSM303DLHC_I2C, RegisterAddr);
+
+  /* Test on EV8 and clear it */
+  while (!I2C_CheckEvent(LSM303DLHC_I2C, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
+  {
+    if (LSM303DLHC_Timeout-- == 0)
+      return ERROR;
+  }
+  if (NumByteToWrite == 0x01)
+  {
+    LSM303DLHC_Timeout = LSM303DLHC_LONG_TIMEOUT;
+    /* Prepare the register value to be sent */
+    I2C_SendData(LSM303DLHC_I2C, *pBuffer);
+
+    /* Test on EV8 and clear it */
+    while (!I2C_CheckEvent(LSM303DLHC_I2C, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
+    {
+      if (LSM303DLHC_Timeout-- == 0)
+        return ERROR;
+    }
+
+    /* End the configuration sequence */
+    I2C_GenerateSTOP(LSM303DLHC_I2C, ENABLE);
+    return SUCCESS;
+  }
   I2C_SendData(LSM303DLHC_I2C, *pBuffer);
-
-  /* Wait until TXIS flag is set */
-  LSM303DLHC_Timeout = LSM303DLHC_LONG_TIMEOUT;
-  //while(I2C_GetFlagStatus(LSM303DLHC_I2C, I2C_ISR_TXIS) == RESET)
-  while(!I2C_GetFlagStatus(LSM303DLHC_I2C, I2C_FLAG_BTF))
+  pBuffer++;
+  NumByteToWrite--;
+  /* While there is data to be written */
+  while (NumByteToWrite--)
   {
-    if((LSM303DLHC_Timeout--) == 0) return LSM303DLHC_TIMEOUT_UserCallback();
+    while ((I2C_GetLastEvent(LSM303DLHC_I2C) & 0x04) != 0x04);  /* Poll on BTF */
+    /* Send the current byte */
+    I2C_SendData(LSM303DLHC_I2C, *pBuffer);
+    /* Point to the next byte to be written */
+    pBuffer++;
+
   }
-
-  /* End the configuration sequence */
+  LSM303DLHC_Timeout = LSM303DLHC_LONG_TIMEOUT;
+  /* Test on EV8_2 and clear it, BTF = TxE = 1, DR and shift registers are
+   empty */
+  while (!I2C_CheckEvent(LSM303DLHC_I2C, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
+  {
+    if (LSM303DLHC_Timeout-- == 0) return ERROR;
+  }
+  /* Send STOP condition */
   I2C_GenerateSTOP(LSM303DLHC_I2C, ENABLE);
-
-  /* Wait until STOPF flag is set */
-  //LSM303DLHC_Timeout = LSM303DLHC_LONG_TIMEOUT;
-  //while(I2C_GetFlagStatus(LSM303DLHC_I2C, I2C_ISR_STOPF) == RESET)
-  //{
-  //  if((LSM303DLHC_Timeout--) == 0) return LSM303DLHC_TIMEOUT_UserCallback();
-  //}
-
-  /* Verify that the data has been correctly written */
-  //result = (Codec_ReadRegister(RegisterAddr) == RegisterValue)? 0:1;
-
-  /* Clear STOPF flag */
-  //I2C_ClearFlag(LSM303DLHC_I2C, I2C_ICR_STOPCF);
-
-  return LSM303DLHC_OK;
+  return SUCCESS;
 }
 
 /**
-  * @brief  Reads a block of data from the LSM303DLHC.
-  * @param  DeviceAddr : specifies the slave address to be programmed(ACC_I2C_ADDRESS or MAG_I2C_ADDRESS).
-  * @param  RegAddr : specifies the LSM303DLHC internal address register to read from.
-  * @param  pBuffer : pointer to the buffer that receives the data read from the LSM303DLH.
-  * @param  NumByteToRead : number of bytes to read from the LSM303DLH ( NumByteToRead >1  only for the Mgnetometer readinf).
-  * @retval LSM303DLHC register value
+  * @brief  Configure the I2C Peripheral used to communicate with LSM303DLHC.
+  * @param  None.
+  * @retval None.
   */
-uint16_t LSM303DLHC_Read(uint8_t DeviceAddr, uint8_t RegAddr, uint8_t* pBuffer, uint16_t NumByteToRead)
+void LSM303DLHC_I2C_Config(void)
 {
-  /* Test on BUSY Flag */
-  LSM303DLHC_Timeout = LSM303DLHC_LONG_TIMEOUT;
-  //while(I2C_GetFlagStatus(LSM303DLHC_I2C, I2C_ISR_BUSY) != RESET)
-  while(I2C_GetFlagStatus(LSM303DLHC_I2C, I2C_FLAG_BUSY))
-  {
-    if((LSM303DLHC_Timeout--) == 0) return LSM303DLHC_TIMEOUT_UserCallback();
-  }
+  I2C_InitTypeDef I2C_InitStructure;
+  GPIO_InitTypeDef GPIO_InitStructure;
+  RCC_AHB1PeriphClockCmd(LSM303DLHC_I2C_SCK_GPIO_CLK, ENABLE);
+  RCC_AHB1PeriphClockCmd(LSM303DLHC_I2C_SDA_GPIO_CLK, ENABLE);
 
-  /* Configure slave address, nbytes, reload, end mode and start or stop generation */
-  //I2C_TransferHandling(LSM303DLHC_I2C, DeviceAddr, 1, I2C_SoftEnd_Mode, I2C_Generate_Start_Write);
-  I2C_GenerateSTART(LSM303DLHC_I2C, ENABLE);
+  /* Connect PB6 and PB7 to LSM303DLHC_I2C*/
+  GPIO_PinAFConfig(LSM303DLHC_I2C_SCK_GPIO_PORT, LSM303DLHC_I2C_SCK_SOURCE, LSM303DLHC_I2C_SCK_AF);
+  GPIO_PinAFConfig(LSM303DLHC_I2C_SDA_GPIO_PORT, LSM303DLHC_I2C_SDA_SOURCE, LSM303DLHC_I2C_SCK_AF);
 
-  /* Wait until TXIS flag is set */
-  LSM303DLHC_Timeout = LSM303DLHC_LONG_TIMEOUT;
-  //while(I2C_GetFlagStatus(LSM303DLHC_I2C, I2C_ISR_TXIS) == RESET)
-  while (!I2C_CheckEvent(LSM303DLHC_I2C, I2C_EVENT_MASTER_MODE_SELECT))
-  {
-    if((LSM303DLHC_Timeout--) == 0) return LSM303DLHC_TIMEOUT_UserCallback();
-  }
+  /* Configure SCL */
+  GPIO_InitStructure.GPIO_Pin = LSM303DLHC_I2C_SCK_PIN;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_Init(LSM303DLHC_I2C_SCK_GPIO_PORT, &GPIO_InitStructure);
 
-  /* Transmit the slave address and enable writing operation */
-  I2C_Send7bitAddress(LSM303DLHC_I2C, DeviceAddr, I2C_Direction_Transmitter);
+  /* Configure SDA */
+  GPIO_InitStructure.GPIO_Pin = LSM303DLHC_I2C_SDA_PIN;
+  GPIO_Init(LSM303DLHC_I2C_SDA_GPIO_PORT, &GPIO_InitStructure);
 
-  /* Test on EV6 and clear it */
-  LSM303DLHC_Timeout = LSM303DLHC_LONG_TIMEOUT;
-  while (!I2C_CheckEvent(LSM303DLHC_I2C, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
-  {
-    if((LSM303DLHC_Timeout--) == 0) return LSM303DLHC_TIMEOUT_UserCallback();
-  }
+    /* LSM303DLHC_I2C Periph clock enable */
+  RCC_APB1PeriphClockCmd(LSM303DLHC_I2C_CLK, ENABLE);
 
+  /* Configure LSM303DLHC_I2C for communication */
+  I2C_InitStructure.I2C_Mode = I2C_Mode_I2C;
+  I2C_InitStructure.I2C_DutyCycle = I2C_DutyCycle_2;
+  I2C_InitStructure.I2C_OwnAddress1 = 0x33;
+  I2C_InitStructure.I2C_Ack = I2C_Ack_Enable;
+  I2C_InitStructure.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit;
+  I2C_InitStructure.I2C_ClockSpeed = LSM303DLHC_MAX_COMMUNICATION_FREQ;
 
-  if(NumByteToRead>1)
-      RegAddr |= 0x80;
+  I2C_DeInit(LSM303DLHC_I2C);
+  I2C_Cmd(LSM303DLHC_I2C, ENABLE);
+  I2C_Init(LSM303DLHC_I2C, &I2C_InitStructure);
 
-
-  /* Send Register address */
-  I2C_SendData(LSM303DLHC_I2C, (uint8_t)RegAddr);
-
-  /* Wait until TC flag is set */
-  LSM303DLHC_Timeout = LSM303DLHC_LONG_TIMEOUT;
-  //while(I2C_GetFlagStatus(LSM303DLHC_I2C, I2C_ISR_TC) == RESET)
-  while (I2C_GetFlagStatus(LSM303DLHC_I2C, I2C_FLAG_BTF) == RESET)
-  {
-    if((LSM303DLHC_Timeout--) == 0) return LSM303DLHC_TIMEOUT_UserCallback();
-  }
-
-  /* Configure slave address, nbytes, reload, end mode and start or stop generation */
-  //I2C_TransferHandling(LSM303DLHC_I2C, DeviceAddr, NumByteToRead, I2C_AutoEnd_Mode, I2C_Generate_Start_Read);
-  I2C_GenerateSTART(LSM303DLHC_I2C, ENABLE);
-
-  LSM303DLHC_Timeout = LSM303DLHC_LONG_TIMEOUT;
-  while(!I2C_CheckEvent(LSM303DLHC_I2C, I2C_EVENT_MASTER_MODE_SELECT))
-  {
-    if((LSM303DLHC_Timeout--) == 0) return LSM303DLHC_TIMEOUT_UserCallback();
-  }
-
-    /*!< Send Codec address for read */
-  I2C_Send7bitAddress(LSM303DLHC_I2C, DeviceAddr, I2C_Direction_Receiver);
-
-  LSM303DLHC_Timeout = LSM303DLHC_LONG_TIMEOUT;
-  while(I2C_GetFlagStatus(LSM303DLHC_I2C, I2C_FLAG_ADDR) == RESET)
-  {
-    if((LSM303DLHC_Timeout--) == 0) return LSM303DLHC_TIMEOUT_UserCallback();
-  }
-
-  /*!< Disable Acknowledgment */
-  I2C_AcknowledgeConfig(LSM303DLHC_I2C, DISABLE);
-
-  /* Clear ADDR register by reading SR1 then SR2 register (SR1 has already been read) */
-  (void)LSM303DLHC_I2C->SR2;
-
-  /*!< Send STOP Condition */
-  I2C_GenerateSTOP(LSM303DLHC_I2C, ENABLE);
-
-  /* Wait until all data are received */
-  while (NumByteToRead)
-  {
-    /* Wait until RXNE flag is set */
-    //LSM303DLHC_Timeout = LSM303DLHC_LONG_TIMEOUT;
-    //while(I2C_GetFlagStatus(LSM303DLHC_I2C, I2C_ISR_RXNE) == RESET)
-    //while(I2C_GetFlagStatus(LSM303DLHC_I2C, I2C_FLAG_RXNE) == RESET)
-    //{
-    //  if((LSM303DLHC_Timeout--) == 0) return LSM303DLHC_TIMEOUT_UserCallback();
-    //}
-
-    LSM303DLHC_Timeout = 0;
-    while(I2C_GetFlagStatus(LSM303DLHC_I2C, I2C_FLAG_RXNE) == RESET)
-    {
-      if((LSM303DLHC_Timeout++) == 0xFFFFFFFF) return LSM303DLHC_TIMEOUT_UserCallback();
-    }
-
-    /* Read data from RXDR */
-    *pBuffer = I2C_ReceiveData(LSM303DLHC_I2C);
-    /* Point to the next location where the byte read will be saved */
-    pBuffer++;
-
-    /* Decrement the read bytes counter */
-    NumByteToRead--;
-  }
-
-  /* Wait until STOPF flag is set */
-  LSM303DLHC_Timeout = LSM303DLHC_LONG_TIMEOUT;
-  //while(I2C_GetFlagStatus(LSM303DLHC_I2C, I2C_ISR_STOPF) == RESET)
-  while(LSM303DLHC_I2C->CR1 & I2C_CR1_STOP)
-  {
-    if((LSM303DLHC_Timeout--) == 0) return LSM303DLHC_TIMEOUT_UserCallback();
-  }
-
-  /*!< Re-Enable Acknowledgment to be ready for another reception */
-  I2C_AcknowledgeConfig(LSM303DLHC_I2C, ENABLE);
-
-  /* Clear STOPF flag */
-  //I2C_ClearFlag(LSM303DLHC_I2C, I2C_ICR_STOPCF);
-  I2C_ClearFlag(LSM303DLHC_I2C, I2C_FLAG_AF);
-
-  /* If all operations OK */
-  return LSM303DLHC_OK;
 }
+
 /**
 * @brief  Initializes the low level interface used to drive the LSM303DLHC
 * @param  None
@@ -697,12 +826,10 @@ static void LSM303DLHC_LowLevel_Init(void)
   /* I2C configuration -------------------------------------------------------*/
   I2C_InitStructure.I2C_Mode = I2C_Mode_I2C;
   I2C_InitStructure.I2C_DutyCycle = I2C_DutyCycle_2;
-  //I2C_InitStructure.I2C_AnalogFilter = I2C_AnalogFilter_Enable;
-  //I2C_InitStructure.I2C_DigitalFilter = 0x00;
   I2C_InitStructure.I2C_OwnAddress1 = 0x00;
   I2C_InitStructure.I2C_Ack = I2C_Ack_Enable;
   I2C_InitStructure.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit;
-  I2C_InitStructure.I2C_ClockSpeed = 100000;
+  I2C_InitStructure.I2C_ClockSpeed = LSM303DLHC_MAX_COMMUNICATION_FREQ;
 
   /* Apply LSM303DLHC_I2C configuration after enabling it */
   I2C_Init(LSM303DLHC_I2C, &I2C_InitStructure);
