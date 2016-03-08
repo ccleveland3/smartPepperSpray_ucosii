@@ -61,6 +61,7 @@
         EXTERN OS_CPU_SysTickHandler
 
         EXTERN BSP_IntHandlerSDIO
+        EXTERN BSP_IntHandlerEXTI15_10
         EXTERN BSP_IntHandlerDMA2_CH3
 
         PUBLIC  __vector_table
@@ -134,7 +135,7 @@ __vector_table
         DCD     USART1_IRQHandler                 ; USART1
         DCD     USART2_IRQHandler                 ; USART2
         DCD     USART3_IRQHandler                 ; USART3
-        DCD     EXTI15_10_IRQHandler              ; External Line[15:10]s
+        DCD     BSP_IntHandlerEXTI15_10           ;EXTI15_10_IRQHandler
         DCD     RTC_Alarm_IRQHandler              ; RTC Alarm (A and B) through EXTI Line
         DCD     OTG_FS_WKUP_IRQHandler            ; USB OTG FS Wakeup through EXTI line
         DCD     TIM8_BRK_TIM12_IRQHandler         ; TIM8 Break and TIM12
@@ -439,7 +440,7 @@ USART3_IRQHandler
         PUBWEAK EXTI15_10_IRQHandler
         SECTION .text:CODE:REORDER(1)
 EXTI15_10_IRQHandler
-        B EXTI15_10_IRQHandler
+        B BSP_IntHandlerEXTI15_10
 
         PUBWEAK RTC_Alarm_IRQHandler
         SECTION .text:CODE:REORDER(1)

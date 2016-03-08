@@ -26,6 +26,7 @@
 #include  <ctype.h>
 #include  <stdlib.h>
 #include  <stdarg.h>
+#include <STMPE811QTR.h>
 
 #include  "ucos_ii.h"
 #include  "cpu.h"

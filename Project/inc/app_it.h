@@ -8,5 +8,8 @@
 
 #ifndef __APP_IT_H
 #define __APP_IT_H
+extern uint8_t touched;
 void itInit();
+void TouchIRQ();
+//void EXTI0_IRQHandler(void);
 #endif

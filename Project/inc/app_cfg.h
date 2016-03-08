@@ -26,10 +26,11 @@
 
 #define  APP_TASK_START_PRIO                               3
 #define  APP_TASK_KBD_PRIO                                 4
+#define  APP_TASK_TOUCH_PRIO                               5
 #define  OS_TASK_TMR_PRIO                (OS_LOWEST_PRIO - 2)
 
-#define  APP_TASK_START_STK_SIZE                         512
-#define  APP_TASK_KBD_STK_SIZE                           128
+#define  APP_TASK_START_STK_SIZE                        1024
+#define  APP_TASK_KBD_STK_SIZE                           512
 
 #define  uC_CFG_OPTIMIZE_ASM_EN                 DEF_ENABLED
 #define  LIB_STR_CFG_FP_EN                      DEF_DISABLED

@@ -83,10 +83,10 @@ void  BSP_Init (void)
 {
   BSP_IntInit();
 
-  STM_EVAL_LEDInit(LED4);
-  STM_EVAL_LEDInit(LED5);
-  STM_EVAL_LEDInit(LED6);
-  STM_EVAL_LEDInit(LED3);
+  //STM_EVAL_LEDInit(LED4);
+  //STM_EVAL_LEDInit(LED5);
+  //STM_EVAL_LEDInit(LED6);
+  //STM_EVAL_LEDInit(LED3);
 
   BSP_PB_Init();
 }

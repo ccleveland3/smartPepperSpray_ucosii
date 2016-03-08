@@ -26,6 +26,7 @@
 #include "stm32f4_discovery_lcd.h"
 #include "stmpe811qtr.h"
 #include "LCD_Touch_Calibration.h"
+#include "ucos_ii.h"
 
 /** @defgroup STM32F4xx_StdPeriph_Examples
   * @{

@@ -1,137 +1,137 @@
 /**
-  ******************************************************************************
-  * <h2><center>&copy; COPYRIGHT 2012 Embest Tech. Co., Ltd.</center></h2>
-  * @file    STMPE811QTR.h
-  * @author  CMP Team
-  * @version V1.0.0
-  * @date    28-December-2012
-  * @brief   header for STMPE811QTR.c      
-  ******************************************************************************
-  * @attention
-  *
-  * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
-  * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
-  * TIME. AS A RESULT, Embest SHALL NOT BE HELD LIABLE FOR ANY DIRECT, INDIRECT
-  * OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING FROM THE CONTENT
-  * OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE CODING INFORMATION
-  * CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
-  ******************************************************************************
-  */
+******************************************************************************
+* <h2><center>&copy; COPYRIGHT 2012 Embest Tech. Co., Ltd.</center></h2>
+* @file    STMPE811QTR.h
+* @author  CMP Team
+* @version V1.0.0
+* @date    28-December-2012
+* @brief   header for STMPE811QTR.c      
+******************************************************************************
+* @attention
+*
+* THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
+* WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
+* TIME. AS A RESULT, Embest SHALL NOT BE HELD LIABLE FOR ANY DIRECT, INDIRECT
+* OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING FROM THE CONTENT
+* OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE CODING INFORMATION
+* CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+******************************************************************************
+*/
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __STMPE811QTR_H
 #define __STMPE811QTR_H
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif   
-   
-/* Includes ------------------------------------------------------------------*/
+  
+  /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx.h"
-
-/** @addtogroup Utilities
+  
+  /** @addtogroup Utilities
   * @{
   */
-
-/** @addtogroup STM32F4_DISCOVERY
+  
+  /** @addtogroup STM32F4_DISCOVERY
   * @{
   */
-    
-/** @defgroup STM32F4_DISCOVERY_IOE 
+  
+  /** @defgroup STM32F4_DISCOVERY_IOE 
   * @{
   */    
-
-
-/** @defgroup STM32F4_DISCOVERY_IOE_Exported_Types
+  
+  
+  /** @defgroup STM32F4_DISCOVERY_IOE_Exported_Types
   * @{
   */ 
-
-/** 
+  
+  /** 
   * @brief  Touch Screen Information structure  
   */ 
-typedef struct
-{
-  uint16_t TouchDetected;
-  uint16_t X;
-  uint16_t Y;
-  uint16_t Z;
-}TS_STATE; 
+  typedef struct
+  {
+    uint16_t TouchDetected;
+    uint16_t X;
+    uint16_t Y;
+    uint16_t Z;
+  }TS_STATE; 
   
- 
-/** 
+  
+  /** 
   * @brief  IO_Expander Error codes  
   */ 
-typedef enum
-{
-  IOE_OK = 0,
-  IOE_FAILURE, 
-  IOE_TIMEOUT,
-  PARAM_ERROR,
-  IOE1_NOT_OPERATIONAL, 
-}IOE_Status_TypDef;
-
-/** 
+  typedef enum
+  {
+    IOE_OK = 0,
+    IOE_FAILURE, 
+    IOE_TIMEOUT,
+    PARAM_ERROR,
+    IOE1_NOT_OPERATIONAL, 
+  }IOE_Status_TypDef;
+  
+  /** 
   * @brief  IO bit values  
   */ 
-typedef enum
-{
-  BitReset = 0,
-  BitSet = 1
-}IOE_BitValue_TypeDef;
-
-/** 
+  typedef enum
+  {
+    BitReset = 0,
+    BitSet = 1
+  }IOE_BitValue_TypeDef;
+  
+  /** 
   * @brief  IOE DMA Direction  
   */ 
-typedef enum
-{
-  IOE_DMA_TX = 0,
-  IOE_DMA_RX = 1
-}IOE_DMADirection_TypeDef;
-
-
-/**
+  typedef enum
+  {
+    IOE_DMA_TX = 0,
+    IOE_DMA_RX = 1
+  }IOE_DMADirection_TypeDef;
+  
+  
+  /**
   * @}
   */ 
-
-
-/** @defgroup STM32F4_DISCOVERY_IOE_Exported_Constants
+  
+  
+  /** @defgroup STM32F4_DISCOVERY_IOE_Exported_Constants
   * @{
   */ 
-
-/**
- * @brief Uncomment the line below to enable verfying each written byte in write
- *        operation. The I2C_WriteDeviceRegister() function will then compare the
- *        written and read data and return error status if a mismatch occurs.
- */
-/* #define VERIFY_WRITTENDATA */
-
-/**
- * @brief Uncomment the line below if you want to use user timeout callback.
- *        Function prototypes is declared in this file but function body may be
- *        implemented into user application.  
- */
-/* #define USE_TIMEOUT_USER_CALLBACK */
-
-/**
- * @brief Uncomment the line below if you want to use user defined Delay function
- *        (for precise timing), otherwise default _delay_ function defined within
- *         this driver is used (less precise timing).  
- */
-/* #define USE_Delay */
-
+  
+  /**
+  * @brief Uncomment the line below to enable verfying each written byte in write
+  *        operation. The I2C_WriteDeviceRegister() function will then compare the
+  *        written and read data and return error status if a mismatch occurs.
+  */
+  /* #define VERIFY_WRITTENDATA */
+  
+  /**
+  * @brief Uncomment the line below if you want to use user timeout callback.
+  *        Function prototypes is declared in this file but function body may be
+  *        implemented into user application.  
+  */
+  /* #define USE_TIMEOUT_USER_CALLBACK */
+  
+  /**
+  * @brief Uncomment the line below if you want to use user defined Delay function
+  *        (for precise timing), otherwise default _delay_ function defined within
+  *         this driver is used (less precise timing).  
+  */
+  /* #define USE_Delay */
+  
 #ifdef USE_Delay
 #include "main.h"
- 
-  #define _delay_     Delay  /* !< User can provide more timing precise _delay_ function
-                                   (with 10ms time base), using SysTick for example */
+  
+#define _delay_     Delay  /* !< User can provide more timing precise _delay_ function
+  (with 10ms time base), using SysTick for example */
 #else
-  #define _delay_     delay      /* !< Default _delay_ function with less precise timing */
+#define _delay_     delay      /* !< Default _delay_ function with less precise timing */
 #endif    
-
-/*------------------------------------------------------------------------------
-    Hardware Configuration 
-------------------------------------------------------------------------------*/
-/** 
+  
+  /*------------------------------------------------------------------------------
+  Hardware Configuration 
+  ------------------------------------------------------------------------------*/
+  /** 
   * @brief  I2C port definitions  
   */ 
 #define IOE_I2C                          I2C1
@@ -147,16 +147,22 @@ typedef enum
 #define IOE_I2C_SDA_SOURCE               GPIO_PinSource9
 #define IOE_I2C_SDA_AF                   GPIO_AF_I2C1
 #define IOE_I2C_DR                       ((uint32_t)0x40005410)
-
-/* I2C clock speed configuration (in Hz) 
+#define IOE_IT_GPIO_PORT                 GPIOC
+#define IOE_IT_EXTI_LINE                 EXTI_Line13
+#define IOE_IT_EXTI_PORT_SOURCE          GPIO_PinSource13
+#define IOE_IT_EXTI_PIN_SOURCE           GPIO_Pin_13
+#define IOE_IT_EXTI_IRQn                 EXTI15_10_IRQn
+  void IOE_EXTI_Config();
+  
+  /* I2C clock speed configuration (in Hz) 
   WARNING: 
-   Make sure that this define is not already declared in other files (ie. 
+  Make sure that this define is not already declared in other files (ie. 
   stm322xg_eval.h file). It can be used in parallel by other modules. */
 #ifndef I2C_SPEED
- #define I2C_SPEED                        100000
+#define I2C_SPEED                        100000
 #endif /* I2C_SPEED */
-
-/** 
+  
+  /** 
   * @brief  IOE DMA definitions  
   */
 #define IOE_DMA_CLK                      RCC_AHB1Periph_DMA1
@@ -165,45 +171,45 @@ typedef enum
 #define IOE_DMA_RX_STREAM                DMA1_Stream0
 #define IOE_DMA_TX_TCFLAG                DMA_FLAG_TCIF6
 #define IOE_DMA_RX_TCFLAG                DMA_FLAG_TCIF0
-
-/** 
+  
+  /** 
   * @brief  IO Expander Interrupt line on EXTI  
   */ 
-
-/**
+  
+  /**
   * @brief Eval Board IO Pins definition 
   */ 
-/**
+  /**
   * @brief Eval Board both IO Exapanders Pins definition 
   */ 
 #define IO1_OUT_ALL_PINS         (uint32_t)(VBAT_DIV_PIN)
-
-/** 
+  
+  /** 
   * @brief  The 7 bits IO Expanders adresses and chip IDs  
   */ 
 #define IOE_1_ADDR                 0x82  
 #define STMPE811_ID                0x0811
-
-
-/*------------------------------------------------------------------------------
-    Functional and Interrupt Management
-------------------------------------------------------------------------------*/
-/** 
+  
+  
+  /*------------------------------------------------------------------------------
+  Functional and Interrupt Management
+  ------------------------------------------------------------------------------*/
+  /** 
   * @brief  IO Expander Functionalities definitions  
   */ 
 #define IOE_ADC_FCT              0x01
 #define IOE_TS_FCT               0x02
 #define IOE_IO_FCT               0x04
 #define IOE_TEMPSENS_FCT         0x08
-
-/** 
+  
+  /** 
   * @brief  Interrupt source configuration definitons  
   */ 
 #define IOE_ITSRC_TSC           0x01  /* IO_Exapnder 1 */
 #define IOE_ITSRC_INMEMS        0x02  /* IO_Exapnder 1 */
 #define IOE_ITSRC_TEMPSENS      0x08  /* IO_Exapnder 2 */
-
-/** 
+  
+  /** 
   * @brief  Glaobal Interrupts definitions  
   */ 
 #define IOE_GIT_GPIO             0x80
@@ -213,24 +219,24 @@ typedef enum
 #define IOE_GIT_FF               0x08
 #define IOE_GIT_FTH              0x02
 #define IOE_GIT_TOUCH            0x01
-
-/*------------------------------------------------------------------------------
-    STMPE811 device register definition
-------------------------------------------------------------------------------*/
-/** 
+  
+  /*------------------------------------------------------------------------------
+  STMPE811 device register definition
+  ------------------------------------------------------------------------------*/
+  /** 
   * @brief  Identification registers  
   */ 
 #define IOE_REG_CHP_ID             0x00
 #define IOE_REG_ID_VER             0x02
-
-/** 
+  
+  /** 
   * @brief  General Control Registers  
   */ 
 #define IOE_REG_SYS_CTRL1          0x03
 #define IOE_REG_SYS_CTRL2          0x04
 #define IOE_REG_SPI_CFG            0x08 
-
-/** 
+  
+  /** 
   * @brief  Interrupt Control register  
   */ 
 #define IOE_REG_INT_CTRL           0x09
@@ -238,8 +244,8 @@ typedef enum
 #define IOE_REG_INT_STA            0x0B
 #define IOE_REG_GPIO_INT_EN        0x0C
 #define IOE_REG_GPIO_INT_STA       0x0D
-
-/** 
+  
+  /** 
   * @brief  GPIO Registers  
   */ 
 #define IOE_REG_GPIO_SET_PIN       0x10
@@ -250,8 +256,8 @@ typedef enum
 #define IOE_REG_GPIO_RE            0x15
 #define IOE_REG_GPIO_FE            0x16
 #define IOE_REG_GPIO_AF            0x17
-
-/** 
+  
+  /** 
   * @brief  ADC Registers  
   */ 
 #define IOE_REG_ADC_INT_EN         0x0E
@@ -267,8 +273,8 @@ typedef enum
 #define IOE_REG_ADC_DATA_CH5       0x3A /* 16-Bit register */
 #define IOE_REG_ADC_DATA_CH6       0x3B /* 16-Bit register */
 #define IOE_REG_ADC_DATA_CH7       0x3C /* 16-Bit register */ 
-
-/** 
+  
+  /** 
   * @brief  TouchScreen Registers  
   */ 
 #define IOE_REG_TSC_CTRL           0x40
@@ -288,19 +294,19 @@ typedef enum
 #define IOE_REG_TSC_DATA           0x57
 #define IOE_REG_TSC_I_DRIVE        0x58
 #define IOE_REG_TSC_SHIELD         0x59
-
-/** 
+  
+  /** 
   * @brief  Temperature Sensor registers  
   */ 
 #define IOE_REG_TEMP_CTRL          0x60
 #define IOE_REG_TEMP_DATA          0x61
 #define IOE_REG_TEMP_TH            0x62
-
-
-/*------------------------------------------------------------------------------
-    Functions parameters defines
-------------------------------------------------------------------------------*/
-/**
+  
+  
+  /*------------------------------------------------------------------------------
+  Functions parameters defines
+  ------------------------------------------------------------------------------*/
+  /**
   * @brief Touch Screen Pins definition 
   */ 
 #define TOUCH_YD                    IO_Pin_1 /* IO_Exapnader_1 */ /* Input */
@@ -308,8 +314,8 @@ typedef enum
 #define TOUCH_YU                    IO_Pin_3 /* IO_Exapnader_1 */ /* Input */
 #define TOUCH_XU                    IO_Pin_4 /* IO_Exapnader_1 */ /* Input */
 #define TOUCH_IO_ALL                (uint32_t)(IO_Pin_1 | IO_Pin_2 | IO_Pin_3 | IO_Pin_4)
-
-/** 
+  
+  /** 
   * @brief  IO Pins  
   */ 
 #define IO_Pin_0                 0x01
@@ -321,22 +327,22 @@ typedef enum
 #define IO_Pin_6                 0x40
 #define IO_Pin_7                 0x80
 #define IO_Pin_ALL               0xFF
-
-/** 
+  
+  /** 
   * @brief  IO Pin directions  
   */ 
 #define Direction_IN             0x00
 #define Direction_OUT            0x01
-
-/** 
+  
+  /** 
   * @brief  Interrupt Line output parameters  
   */ 
 #define Polarity_Low             0x00
 #define Polarity_High            0x04
 #define Type_Level               0x00
 #define Type_Edge                0x02
-
-/** 
+  
+  /** 
   * @brief IO Interrupts  
   */ 
 #define IO_IT_0                  0x01
@@ -349,37 +355,37 @@ typedef enum
 #define IO_IT_7                  0x80
 #define ALL_IT                   0xFF
 #define IOE_TS_IT                (uint8_t)(IO_IT_0 | IO_IT_1 | IO_IT_2)
-
-/** 
+  
+  /** 
   * @brief  Edge detection value  
   */ 
 #define EDGE_FALLING              0x01
 #define EDGE_RISING               0x02
-
-/** 
+  
+  /** 
   * @brief  Global interrupt Enable bit  
   */ 
 #define IOE_GIT_EN                0x01
-
-/**
+  
+  /**
   * @}
   */ 
-
-
-
-
-
-/** @defgroup STM32F4_DISCOVERY_IOE_Exported_Functions
+  
+  
+  
+  
+  
+  /** @defgroup STM32F4_DISCOVERY_IOE_Exported_Functions
   * @{
   */ 
-
-/** 
+  
+  /** 
   * @brief  Configuration and initialization functions  
   */
-uint8_t IOE_Config(void);
-uint8_t IOE_ITConfig(uint32_t IOE_ITSRC_Source);
-
-/** 
+  uint8_t IOE_Config(void);
+  uint8_t IOE_ITConfig(uint32_t IOE_ITSRC_Source);
+  
+  /** 
   * @brief  Timeout user callback function. This function is called when a timeout
   *         condition occurs during communication with IO Expander. Only protoype
   *         of this function is decalred in IO Expander driver. Its implementation
@@ -388,85 +394,86 @@ uint8_t IOE_ITConfig(uint32_t IOE_ITSRC_Source);
   *         To enable this function use uncomment the define USE_TIMEOUT_USER_CALLBACK
   *         at the top of this file.          
   */
+#define USE_TIMEOUT_USER_CALLBACK
 #ifdef USE_TIMEOUT_USER_CALLBACK 
- uint8_t IOE_TimeoutUserCallback(void);
+  uint8_t IOE_TimeoutUserCallback(void);
 #else
- #define IOE_TimeoutUserCallback()  IOE_TIMEOUT
+#define IOE_TimeoutUserCallback()  IOE_TIMEOUT
 #endif /* USE_TIMEOUT_USER_CALLBACK */
-
-/** 
+  
+  /** 
   * @brief IO pins control functions
   */
-uint8_t IOE_ReadIOPin(uint32_t IO_Pin);
-
-/** 
+  uint8_t IOE_ReadIOPin(uint32_t IO_Pin);
+  
+  /** 
   * @brief Touch Screen controller functions
   */
-TS_STATE* IOE_TS_GetState(void);
-
-/** 
+  TS_STATE* IOE_TS_GetState(void);
+  
+  /** 
   * @brief Interrupts Mangement functions
   */
-FlagStatus IOE_GetGITStatus(uint8_t DeviceAddr, uint8_t Global_IT);
-uint8_t IOE_ClearGITPending(uint8_t DeviceAddr, uint8_t IO_IT);
-FlagStatus IOE_GetIOITStatus(uint8_t DeviceAddr, uint8_t IO_IT);
-uint8_t IOE_ClearIOITPending(uint8_t DeviceAddr, uint8_t IO_IT);
-
-/** 
+  FlagStatus IOE_GetGITStatus(uint8_t DeviceAddr, uint8_t Global_IT);
+  uint8_t IOE_ClearGITPending(uint8_t DeviceAddr, uint8_t IO_IT);
+  FlagStatus IOE_GetIOITStatus(uint8_t DeviceAddr, uint8_t IO_IT);
+  uint8_t IOE_ClearIOITPending(uint8_t DeviceAddr, uint8_t IO_IT);
+  
+  /** 
   * @brief Temperature Sensor functions
   */
-uint32_t IOE_TempSens_GetData(void);
-
-/** 
+  uint32_t IOE_TempSens_GetData(void);
+  
+  /** 
   * @brief IO-Expander Control functions
   */
-uint8_t IOE_IsOperational(uint8_t DeviceAddr);
-uint8_t IOE_Reset(uint8_t DeviceAddr);
-uint16_t IOE_ReadID(uint8_t DeviceAddr);
-
-uint8_t IOE_FnctCmd(uint8_t DeviceAddr, uint8_t Fct, FunctionalState NewState);
-uint8_t IOE_IOPinConfig(uint8_t DeviceAddr, uint8_t IO_Pin, uint8_t Direction);
-uint8_t IOE_GITCmd(uint8_t DeviceAddr, FunctionalState NewState);
-uint8_t IOE_GITConfig(uint8_t DeviceAddr, uint8_t Global_IT, FunctionalState NewState);
-uint8_t IOE_IOITConfig(uint8_t DeviceAddr, uint8_t IO_IT, FunctionalState NewState);
-
-/** 
+  uint8_t IOE_IsOperational(uint8_t DeviceAddr);
+  uint8_t IOE_Reset(uint8_t DeviceAddr);
+  uint16_t IOE_ReadID(uint8_t DeviceAddr);
+  
+  uint8_t IOE_FnctCmd(uint8_t DeviceAddr, uint8_t Fct, FunctionalState NewState);
+  uint8_t IOE_IOPinConfig(uint8_t DeviceAddr, uint8_t IO_Pin, uint8_t Direction);
+  uint8_t IOE_GITCmd(uint8_t DeviceAddr, FunctionalState NewState);
+  uint8_t IOE_GITConfig(uint8_t DeviceAddr, uint8_t Global_IT, FunctionalState NewState);
+  uint8_t IOE_IOITConfig(uint8_t DeviceAddr, uint8_t IO_IT, FunctionalState NewState);
+  
+  /** 
   * @brief Low Layer functions
   */
-uint8_t IOE_TS_Config(void);
-uint8_t IOE_TempSens_Config(void);
-uint8_t IOE_IOAFConfig(uint8_t DeviceAddr, uint8_t IO_Pin, FunctionalState NewState);
-uint8_t IOE_IOEdgeConfig(uint8_t DeviceAddr, uint8_t IO_Pin, uint8_t Edge);
-uint8_t IOE_ITOutConfig(uint8_t Polarity, uint8_t Type);
-
-uint8_t I2C_WriteDeviceRegister(uint8_t DeviceAddr, uint8_t RegisterAddr, uint8_t RegisterValue);
-uint8_t I2C_ReadDeviceRegister(uint8_t DeviceAddr, uint8_t RegisterAddr);
-uint16_t I2C_ReadDataBuffer(uint8_t DeviceAddr, uint8_t RegisterAddr);
-
-uint16_t IOE_TS_Read_X(void);
-uint16_t IOE_TS_Read_Y(void);
+  uint8_t IOE_TS_Config(void);
+  uint8_t IOE_TempSens_Config(void);
+  uint8_t IOE_IOAFConfig(uint8_t DeviceAddr, uint8_t IO_Pin, FunctionalState NewState);
+  uint8_t IOE_IOEdgeConfig(uint8_t DeviceAddr, uint8_t IO_Pin, uint8_t Edge);
+  uint8_t IOE_ITOutConfig(uint8_t Polarity, uint8_t Type);
+  
+  uint8_t I2C_WriteDeviceRegister(uint8_t DeviceAddr, uint8_t RegisterAddr, uint8_t RegisterValue);
+  uint8_t I2C_ReadDeviceRegister(uint8_t DeviceAddr, uint8_t RegisterAddr);
+  uint16_t I2C_ReadDataBuffer(uint8_t DeviceAddr, uint8_t RegisterAddr);
+  
+  uint16_t IOE_TS_Read_X(void);
+  uint16_t IOE_TS_Read_Y(void);
 #ifdef __cplusplus
 }
 #endif
 #endif /* __STMPE811QTR_H */
 
 /**
-  * @}
-  */ 
+* @}
+*/ 
 
 /**
-  * @}
-  */ 
+* @}
+*/ 
 
 /**
-  * @}
-  */
+* @}
+*/
 
 /**
-  * @}
-  */ 
+* @}
+*/ 
 
 /**
-  * @}
-  */       
+* @}
+*/       
 /******************** COPYRIGHT 2012 Embest Tech. Co., Ltd.*****END OF FILE****/
