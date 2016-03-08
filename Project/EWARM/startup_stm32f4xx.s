@@ -63,6 +63,7 @@
         EXTERN BSP_IntHandlerSDIO
         EXTERN BSP_IntHandlerEXTI15_10
         EXTERN BSP_IntHandlerDMA2_CH3
+        EXTERN BSP_IntHandlerTIM6
 
         PUBLIC  __vector_table
 
@@ -149,7 +150,7 @@ __vector_table
         DCD     SPI3_IRQHandler                   ; SPI3
         DCD     UART4_IRQHandler                  ; UART4
         DCD     UART5_IRQHandler                  ; UART5
-        DCD     TIM6_DAC_IRQHandler               ; TIM6 and DAC1&2 underrun errors
+        DCD     BSP_IntHandlerTIM6                ;TIM6_DAC_IRQHandler TIM6 and DAC1&2 underrun errors
         DCD     TIM7_IRQHandler                   ; TIM7
         DCD     DMA2_Stream0_IRQHandler           ; DMA2 Stream 0
         DCD     DMA2_Stream1_IRQHandler           ; DMA2 Stream 1
@@ -510,7 +511,7 @@ UART5_IRQHandler
         PUBWEAK TIM6_DAC_IRQHandler
         SECTION .text:CODE:REORDER(1)
 TIM6_DAC_IRQHandler
-        B TIM6_DAC_IRQHandler
+        B BSP_IntHandlerTIM6
 
         PUBWEAK TIM7_IRQHandler
         SECTION .text:CODE:REORDER(1)

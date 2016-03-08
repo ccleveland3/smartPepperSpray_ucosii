@@ -1,11 +1,11 @@
 /**
   ******************************************************************************
   * <h2><center>&copy; COPYRIGHT 2012 Embest Tech. Co., Ltd.</center></h2>
-  * @file    app_cfg.h 
+  * @file    app_cfg.h
   * @author  CMP Team
   * @version V1.0.0
   * @date    28-December-2012
-  * @brief   application configuration file.                       
+  * @brief   application configuration file.
   ******************************************************************************
   * @attention
   *
@@ -22,7 +22,7 @@
 #define  __APP_CFG_H__
 
 /* Exported define -----------------------------------------------------------*/
-#define  APP_OS_PROBE_EN                         DEF_DISABLED 
+#define  APP_OS_PROBE_EN                         DEF_DISABLED
 
 #define  APP_TASK_START_PRIO                               3
 #define  APP_TASK_KBD_PRIO                                 4

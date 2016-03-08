@@ -42,6 +42,11 @@
 #include "stm32f4_discovery_lcd.h"
 #include "stmpe811qtr.h"
 #include "LCD_Touch_Calibration.h"
+#include "sound_output.h"
+#include "waverecorder.h"
+#include "selfTest.h"
+#include "stm32f401_discovery_lsm303dlhc.h"
+#include "accelerometer.h"
 
 #endif /*__INCLUDES_H__*/
 

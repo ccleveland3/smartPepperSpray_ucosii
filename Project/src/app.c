@@ -28,6 +28,8 @@
 #define LED_DLYCOUNT_MAX     500
 #define LED_DLYCOUNT_MIN     50
 #define LED_DLYCOUNT_STEP    50
+#define DCMI_DR_ADDRESS     0x50050028
+#define FSMC_LCD_ADDRESS    0x60100000
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -59,7 +61,8 @@ static  void  fault_err            (FRESULT rc);
 static void LCD_Display();
 static void KeyPad();
 static void Touch();
-
+uint8_t DCMI_OV9655Config(void);
+void DCMI_Config(void);
 /* Private functions ---------------------------------------------------------*/
 /**
 * @brief  Main program.
@@ -75,7 +78,7 @@ int  main (void)
   /* Initialize "uC/OS-II, The Real-Time Kernel".*/
   OSInit();
   /* Create the start task.*/
-  
+
   os_err = OSTaskCreateExt((void (*)(void *)) App_TaskStart,
                            (void          * ) 0,
                            (OS_STK        * )&App_TaskStartStk[APP_TASK_START_STK_SIZE - 1],
@@ -85,13 +88,13 @@ int  main (void)
                            (INT32U          ) APP_TASK_START_STK_SIZE,
                            (void          * )0,
                            (INT16U          )(OS_TASK_OPT_STK_CLR | OS_TASK_OPT_STK_CHK));
-  
+
 #if (OS_TASK_NAME_SIZE >= 11)
   OSTaskNameSet(APP_TASK_START_PRIO, (CPU_INT08U *)"Start Task", &os_err);
 #endif
   /* Start multitasking (i.e. give control to uC/OS-II).*/
   OSStart();
-  
+
   return (0);
 }
 
@@ -104,13 +107,17 @@ int  main (void)
 static  void  App_TaskStart (void *p_arg)
 {
   (void)p_arg;
+  float pfData[3] = {0};
+
   /* Initialize BSP functions. */
   BSP_Init();
   /* Initialize the SysTick. */
   OS_CPU_SysTickInit();
   /* Initialize external interrupt callbacks */
   itInit();
-  
+
+  sineWave_init();
+
 #if (OS_TASK_STAT_EN > 0)
   /* Determine CPU capacity. */
   OSStatInit();
@@ -119,123 +126,19 @@ static  void  App_TaskStart (void *p_arg)
   App_EventCreate();
   /* Create application tasks. */
   App_TaskCreate();
-  
-  //STM32f4_Discovery_Debug_Init();
-  
-  //LCD_Display();
-  
+
   /* mount the filesystem */
   if (f_mount(0, &filesystem) != FR_OK) {
     //printf("could not open filesystem \n\r");
   }
   OSTimeDlyHMSM(0, 0, 0, 10);
-  
-  //printf("Open a test file (message.txt) \n\r");
-  ret = f_open(&file, "MESSAGE.TXT", FA_READ);
-  if (ret) {
-    //printf("not exist the test file (message.txt)\n\r");
-  } else {
-    //printf("Type the file content\n\r");
-    for (;;) {
-      ret = f_read(&file, buff, sizeof(buff), &br);	/* Read a chunk of file */
-      if (ret || !br) {
-        break;			/* Error or end of file */
-      }
-      buff[br] = 0;
-      //printf("%s",buff);
-      //printf("\n\r");
-    }
-    if (ret) {
-      //printf("Read the file error\n\r");
-      fault_err(ret);
-    }
-    
-    //printf("Close the file\n\r");
-    ret = f_close(&file);
-    if (ret) {
-      // printf("Close the file error\n\r");
-    }
-  }
-  
-  /*  hello.txt write test*/
-  OSTimeDlyHMSM(0, 0, 0, 50);
-  //printf("Create a new file (hello.txt)\n\r");
-  ret = f_open(&file, "HELLO.TXT", FA_WRITE | FA_CREATE_ALWAYS);
-  if (ret) {
-    //printf("Create a new file error\n\r");
-    fault_err(ret);
-  } else {
-    //printf("Write a text data. (hello.txt)\n\r");
-    ret = f_write(&file, "Hello world!", 14, &bw);
-    if (ret) {
-      //printf("Write a text data to file error\n\r");
-    } else {
-      //printf("%u bytes written\n\r", bw);
-    }
-    OSTimeDlyHMSM(0, 0, 0, 50);
-    //printf("Close the file\n\r");
-    ret = f_close(&file);
-    if (ret) {
-      //printf("Close the hello.txt file error\n\r");
-    }
-  }
-  
-  /*  hello.txt read test*/
-  OSTimeDlyHMSM(0, 0, 0, 50);
-  //printf("read the file (hello.txt)\n\r");
-  ret = f_open(&file, "HELLO.TXT", FA_READ);
-  if (ret) {
-    //printf("open hello.txt file error\n\r");
-  } else {
-    //printf("Type the file content(hello.txt)\n\r");
-    for (;;) {
-      ret = f_read(&file, buff, sizeof(buff), &br);	/* Read a chunk of file */
-      if (ret || !br) {
-        break;			/* Error or end of file */
-      }
-      buff[br] = 0;
-      //printf("%s",buff);
-      //printf("\n\r");
-    }
-    if (ret) {
-      //printf("Read file (hello.txt) error\n\r");
-      fault_err(ret);
-    }
-    
-    //printf("Close the file (hello.txt)\n\r");
-    ret = f_close(&file);
-    if (ret) {
-      //printf("Close the file (hello.txt) error\n\r");
-    }
-  }
-  
-  /*  directory display test */
-  //  OSTimeDlyHMSM(0, 0, 0, 50);
-  //  printf("Open root directory\n\r");
-  //  ret = f_opendir(&dir, "");
-  //  if (ret) {
-  //    printf("Open root directory error\n\r");
-  //  } else {
-  //    printf("Directory listing...\n\r");
-  //    for (;;) {
-  //      ret = f_readdir(&dir, &fno);		/* Read a directory item */
-  //      if (ret || !fno.fname[0]) {
-  //        break;	/* Error or end of dir */
-  //      }
-  //      if (fno.fattrib & AM_DIR) {
-  //        printf("  <dir>  %s\n\r", fno.fname);
-  //      } else {
-  //        printf("%8lu  %s\n\r", fno.fsize, fno.fname);
-  //      }
-  //    }
-  //    if (ret) {
-  //      printf("Read a directory error\n\r");
-  //      fault_err(ret);
-  //    }
-  //  }
-  OSTimeDlyHMSM(0, 0, 0, 50);
-  //printf("Test completed\n\r");
-  
+
+  WaveRecorderUpdate();
+
+  accelerometerCompassInit();
+  LSM303DLHC_CompassReadAcc(pfData);
+  LSM303DLHC_CompassReadMag(pfData);
+
   while (DEF_TRUE)
   {
     //STM_EVAL_LEDToggle(LED4);
@@ -397,6 +300,136 @@ static void KeyPad()
 }
 
 /**
+  * @brief  Configures the DCMI to interface with the OV9655 camera module.
+  * @param  None
+  * @retval None
+  */
+void DCMI_Config(void)
+{
+  DCMI_InitTypeDef DCMI_InitStructure;
+  GPIO_InitTypeDef GPIO_InitStructure;
+  DMA_InitTypeDef  DMA_InitStructure;
+  
+  /* Enable DCMI GPIOs clocks */
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_GPIOE | 
+                         RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOA, ENABLE); 
+
+  /* Enable DCMI clock */
+  RCC_AHB2PeriphClockCmd(RCC_AHB2Periph_DCMI, ENABLE);
+
+  /* Connect DCMI pins to AF13 ************************************************/
+  /* PCLK */
+  GPIO_PinAFConfig(GPIOA, GPIO_PinSource6, GPIO_AF_DCMI);
+  /* D0-D7 */
+  GPIO_PinAFConfig(GPIOC, GPIO_PinSource6, GPIO_AF_DCMI);
+  GPIO_PinAFConfig(GPIOC, GPIO_PinSource7, GPIO_AF_DCMI);
+  GPIO_PinAFConfig(GPIOE, GPIO_PinSource0, GPIO_AF_DCMI);
+  GPIO_PinAFConfig(GPIOE, GPIO_PinSource1, GPIO_AF_DCMI);
+  GPIO_PinAFConfig(GPIOE, GPIO_PinSource4, GPIO_AF_DCMI);
+  GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_DCMI);
+  GPIO_PinAFConfig(GPIOE, GPIO_PinSource5, GPIO_AF_DCMI);
+  GPIO_PinAFConfig(GPIOE, GPIO_PinSource6, GPIO_AF_DCMI);
+  /* VSYNC */
+  GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_DCMI);
+  /* HSYNC */
+  GPIO_PinAFConfig(GPIOA, GPIO_PinSource4, GPIO_AF_DCMI);
+  
+  /* DCMI GPIO configuration **************************************************/
+  /* D0 D1(PC6/7) */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP ;  
+  GPIO_Init(GPIOC, &GPIO_InitStructure);
+
+  /* D2..D4(PE0/1/4) D6/D7(PE5/6) */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 
+	                              | GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6;
+  GPIO_Init(GPIOE, &GPIO_InitStructure);
+
+  /* D5(PB6), VSYNC(PB7) */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+  /* PCLK(PA6) HSYNC(PA4)*/
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_6;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  
+  /* DCMI configuration *******************************************************/ 
+  DCMI_InitStructure.DCMI_CaptureMode = DCMI_CaptureMode_Continuous;
+  DCMI_InitStructure.DCMI_SynchroMode = DCMI_SynchroMode_Hardware;
+  DCMI_InitStructure.DCMI_PCKPolarity = DCMI_PCKPolarity_Falling;
+  DCMI_InitStructure.DCMI_VSPolarity = DCMI_VSPolarity_High;
+  DCMI_InitStructure.DCMI_HSPolarity = DCMI_HSPolarity_High;
+  DCMI_InitStructure.DCMI_CaptureRate = DCMI_CaptureRate_All_Frame;
+  DCMI_InitStructure.DCMI_ExtendedDataMode = DCMI_ExtendedDataMode_8b;
+  
+  DCMI_Init(&DCMI_InitStructure);
+
+  /* Configures the DMA2 to transfer Data from DCMI to the LCD ****************/
+  /* Enable DMA2 clock */
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);  
+  
+  /* DMA2 Stream1 Configuration */  
+  DMA_DeInit(DMA2_Stream1);
+
+  DMA_InitStructure.DMA_Channel = DMA_Channel_1;  
+  DMA_InitStructure.DMA_PeripheralBaseAddr = DCMI_DR_ADDRESS;	
+  DMA_InitStructure.DMA_Memory0BaseAddr = FSMC_LCD_ADDRESS;
+  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
+  DMA_InitStructure.DMA_BufferSize = 1;
+  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Disable;
+  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Word;
+  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
+  DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
+  DMA_InitStructure.DMA_Priority = DMA_Priority_High;
+  DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Enable;         
+  DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_Full;
+  DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
+  DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
+     
+  DMA_Init(DMA2_Stream1, &DMA_InitStructure);
+}
+
+/**
+  * @brief  Configures all needed resources (I2C, DCMI and DMA) to interface with
+  *         the OV9655 camera module
+  * @param  None
+  * @retval 0x00 Camera module configured correctly 
+  *         0xFF Camera module configuration failed
+  */
+uint8_t DCMI_OV9655Config(void)
+{
+  /* I2C1 will be used for OV9655 camera configuration */
+  I2C1_Config();
+
+  /* Reset and check the presence of the OV9655 camera module */
+  if (DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS,0x12, 0x80))
+  {
+     return (0xFF);
+  }
+
+  /* OV9655 Camera size setup */    
+  DCMI_OV9655_QVGASizeSetup();
+
+  /* Set the RGB565 mode */
+  DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS, OV9655_COM7, 0x63);
+  DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS, OV9655_COM15, 0x10);
+
+  /* Invert the HRef signal*/
+  DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS, OV9655_COM10, 0x08);
+
+  /* Configure the DCMI to interface with the OV9655 camera module */
+  DCMI_Config();
+  
+  return (0x00);
+}
+
+/**
 * @brief  Create the application events.
 * @param  None
 * @retval None
@@ -414,7 +447,7 @@ static  void  App_EventCreate (void)
 static  void  App_TaskCreate (void)
 {
   CPU_INT08U  os_err;
-  
+
   os_err = OSTaskCreateExt((void (*)(void *)) App_TaskKbd,
                            (void          * ) 0,
                            (OS_STK        * )&App_TaskKbdStk[APP_TASK_KBD_STK_SIZE - 1],
@@ -557,7 +590,7 @@ void  App_TCBInitHook (OS_TCB *ptcb)
 #if OS_TIME_TICK_HOOK_EN > 0
 void  App_TimeTickHook (void)
 {
-  
+  waveRecordTickInc();
 }
 #endif
 #endif
@@ -574,36 +607,5 @@ void  App_TaskReturnHook (OS_TCB  *ptcb)
   (void)ptcb;
 }
 #endif
-/**
-* @brief  assert failed function.
-* @param  None
-* @retval None
-*/
-void assert_failed(char* file, int line)
-{
-  
-}
-
-/**
-* @brief   FatFs err dispose
-* @param  None
-* @retval None
-*/
-static void fault_err (FRESULT rc)
-{
-  const char *str =
-    "OK\0" "DISK_ERR\0" "INT_ERR\0" "NOT_READY\0" "NO_FILE\0" "NO_PATH\0"
-      "INVALID_NAME\0" "DENIED\0" "EXIST\0" "INVALID_OBJECT\0" "WRITE_PROTECTED\0"
-        "INVALID_DRIVE\0" "NOT_ENABLED\0" "NO_FILE_SYSTEM\0" "MKFS_ABORTED\0" "TIMEOUT\0"
-          "LOCKED\0" "NOT_ENOUGH_CORE\0" "TOO_MANY_OPEN_FILES\0";
-  FRESULT i;
-  
-  for (i = (FRESULT)0; i != rc && *str; i++) {
-    while (*str++) ;
-  }
-  //printf("rc=%u FR_%s\n\r", (UINT)rc, str);
-  //STM_EVAL_LEDOn(LED6);
-  while(1);
-}
 
 /******************** COPYRIGHT 2012 Embest Tech. Co., Ltd.*****END OF FILE****/
