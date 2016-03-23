@@ -11,5 +11,6 @@
 extern uint8_t touched;
 void itInit();
 void TouchIRQ();
+void Button_Handler(void);
 void DAC_TIM_IRQ();
 #endif

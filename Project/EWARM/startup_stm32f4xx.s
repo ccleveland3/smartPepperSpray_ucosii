@@ -62,8 +62,10 @@
 
         EXTERN BSP_IntHandlerSDIO
         EXTERN BSP_IntHandlerEXTI15_10
+        EXTERN BSP_IntHandlerEXTI0
         EXTERN BSP_IntHandlerDMA2_CH3
         EXTERN BSP_IntHandlerTIM6
+        EXTERN BSP_IntHandlerUSART2
 
         PUBLIC  __vector_table
 
@@ -102,7 +104,7 @@ __vector_table
         DCD     RTC_WKUP_IRQHandler               ; RTC Wakeup through the EXTI line
         DCD     FLASH_IRQHandler                  ; FLASH
         DCD     RCC_IRQHandler                    ; RCC
-        DCD     EXTI0_IRQHandler                  ; EXTI Line0
+        DCD     BSP_IntHandlerEXTI0               ;EXTI0_IRQHandler EXTI Line0
         DCD     EXTI1_IRQHandler                  ; EXTI Line1
         DCD     EXTI2_IRQHandler                  ; EXTI Line2
         DCD     EXTI3_IRQHandler                  ; EXTI Line3
@@ -133,8 +135,8 @@ __vector_table
         DCD     I2C2_ER_IRQHandler                ; I2C2 Error
         DCD     SPI1_IRQHandler                   ; SPI1
         DCD     SPI2_IRQHandler                   ; SPI2
-        DCD     USART1_IRQHandler                 ; USART1
-        DCD     USART2_IRQHandler                 ; USART2
+        DCD     USART1_IRQHandler                 ;USART1
+        DCD     BSP_IntHandlerUSART2              ;USART2_IRQHandler ; USART2
         DCD     USART3_IRQHandler                 ; USART3
         DCD     BSP_IntHandlerEXTI15_10           ;EXTI15_10_IRQHandler
         DCD     RTC_Alarm_IRQHandler              ; RTC Alarm (A and B) through EXTI Line
@@ -271,7 +273,7 @@ RCC_IRQHandler
         PUBWEAK EXTI0_IRQHandler
         SECTION .text:CODE:REORDER(1)
 EXTI0_IRQHandler
-        B EXTI0_IRQHandler
+        B BSP_IntHandlerEXTI0
 
         PUBWEAK EXTI1_IRQHandler
         SECTION .text:CODE:REORDER(1)
@@ -431,7 +433,7 @@ USART1_IRQHandler
         PUBWEAK USART2_IRQHandler
         SECTION .text:CODE:REORDER(1)
 USART2_IRQHandler
-        B USART2_IRQHandler
+        B BSP_IntHandlerUSART2
 
         PUBWEAK USART3_IRQHandler
         SECTION .text:CODE:REORDER(1)

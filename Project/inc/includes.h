@@ -47,6 +47,9 @@
 #include "selfTest.h"
 #include "stm32f401_discovery_lsm303dlhc.h"
 #include "accelerometer.h"
+#include "dcmi_ov9655.h"
+#include "bmp.h"
+#include "modem.h"
 
 #endif /*__INCLUDES_H__*/
 
