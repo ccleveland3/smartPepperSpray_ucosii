@@ -45,24 +45,33 @@ void modemInit()
   //GPIO_PinAFConfig(GPIOA, GPIO_PinSource12, GPIO_AF_USART1);
   
   /* Configure USART Tx, Rx, CTS, and RTS as alternate function  */
-  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_2  | GPIO_Pin_3;// |
+  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_3;// |
     //GPIO_Pin_11 | GPIO_Pin_12;
   GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;//GPIO_PuPd_UP;
+  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  
+   /* Configure USART Tx, Rx, CTS, and RTS as alternate function  */
+  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_2 ;// |
+    //GPIO_Pin_11 | GPIO_Pin_12;
+  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
   
   /* Configure the ON_OFF pin for the modem
   * It is very important that the output type be open drain because a high is
   * 1.8V for the modem.  The other inputs/outputs are level shifted.
   */
-//  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_8;
-//  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
-//  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-//  GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
-//  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL; //The modem pulls up
-//  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_8;
+  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
+  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL; //The modem pulls up
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
   
   /* USARTx configured as follow:
   - BaudRate = 115200 baud  
@@ -88,8 +97,7 @@ void modemInit()
   /* Enable USART */
   USART_Cmd(USART2, ENABLE);
   
-   /* Enable the Receive Data register not empty interrupt */
-  USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
+ 
   
   /* Enable the USART1 gloabal Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
@@ -98,17 +106,18 @@ void modemInit()
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
   
- 
+   /* Enable the Receive Data register not empty interrupt */
+  USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
   
 //  /* Turn Modem on */
-//  GPIO_ResetBits(GPIOA, GPIO_Pin_8);
-//  OSTimeDlyHMSM(0, 0, 2, 0);
-//  GPIO_SetBits(GPIOA, GPIO_Pin_8);
-//  OSTimeDlyHMSM(0, 0, 2, 0);
-//  GPIO_ResetBits(GPIOA, GPIO_Pin_8);
+  GPIO_ResetBits(GPIOA, GPIO_Pin_8);
+  OSTimeDlyHMSM(0, 0, 2, 0);
+  GPIO_SetBits(GPIOA, GPIO_Pin_8);
+  OSTimeDlyHMSM(0, 0, 2, 0);
+  GPIO_ResetBits(GPIOA, GPIO_Pin_8);
 
   /* Turn off echo */
-  modemSend("ATE0\r\n");
+  modemSend("XATE0\r\n");
   waitResponse("OK",2);
 }
 
