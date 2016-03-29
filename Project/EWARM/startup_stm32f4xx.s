@@ -65,6 +65,7 @@
         EXTERN BSP_IntHandlerEXTI0
         EXTERN BSP_IntHandlerDMA2_CH3
         EXTERN BSP_IntHandlerTIM6
+        EXTERN BSP_IntHandlerUSART1
         EXTERN BSP_IntHandlerUSART2
 
         PUBLIC  __vector_table
@@ -135,7 +136,7 @@ __vector_table
         DCD     I2C2_ER_IRQHandler                ; I2C2 Error
         DCD     SPI1_IRQHandler                   ; SPI1
         DCD     SPI2_IRQHandler                   ; SPI2
-        DCD     USART1_IRQHandler                 ;USART1
+        DCD     BSP_IntHandlerUSART1              ;USART1_IRQHandler ;USART1
         DCD     BSP_IntHandlerUSART2              ;USART2_IRQHandler ; USART2
         DCD     USART3_IRQHandler                 ; USART3
         DCD     BSP_IntHandlerEXTI15_10           ;EXTI15_10_IRQHandler
@@ -428,7 +429,7 @@ SPI2_IRQHandler
         PUBWEAK USART1_IRQHandler
         SECTION .text:CODE:REORDER(1)
 USART1_IRQHandler
-        B USART1_IRQHandler
+        B BSP_IntHandlerUSART1
 
         PUBWEAK USART2_IRQHandler
         SECTION .text:CODE:REORDER(1)

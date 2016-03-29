@@ -8,6 +8,6 @@
 #define __MODEM_H
 
 void modemInit();
-void Modem_USART2_IRQ();
+void Modem_USART1_IRQ();
 
 #endif

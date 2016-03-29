@@ -30,13 +30,13 @@ void modemInit()
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
   
   /* Enable UART clock */
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
   
   /* Connect PA9 to USART1_Tx*/
-  GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_USART2);
+  GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1);
   
   /* Connect PA10 to USART1_Rx*/
-  GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_USART2);
+  GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_USART1);
   
   /* Connect PA11 to USART1_CTS*/
   //GPIO_PinAFConfig(GPIOA, GPIO_PinSource11, GPIO_AF_USART1);
@@ -45,7 +45,7 @@ void modemInit()
   //GPIO_PinAFConfig(GPIOA, GPIO_PinSource12, GPIO_AF_USART1);
   
   /* Configure USART Tx, Rx, CTS, and RTS as alternate function  */
-  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_3;// |
+  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_9 | GPIO_Pin_10;
     //GPIO_Pin_11 | GPIO_Pin_12;
   GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
@@ -53,14 +53,7 @@ void modemInit()
   GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
   
-   /* Configure USART Tx, Rx, CTS, and RTS as alternate function  */
-  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_2 ;// |
-    //GPIO_Pin_11 | GPIO_Pin_12;
-  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
-  GPIO_Init(GPIOA, &GPIO_InitStructure);
+
   
   /* Configure the ON_OFF pin for the modem
   * It is very important that the output type be open drain because a high is
@@ -92,22 +85,22 @@ void modemInit()
 // STM_EVAL_COMInit(COM1, &USART_InitStructure);
   
   /* USART configuration */
-  USART_Init(USART2, &USART_InitStructure);
+  USART_Init(USART1, &USART_InitStructure);
   
   /* Enable USART */
-  USART_Cmd(USART2, ENABLE);
+  USART_Cmd(USART1, ENABLE);
   
  
   
   /* Enable the USART1 gloabal Interrupt */
-  NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
   
    /* Enable the Receive Data register not empty interrupt */
-  USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
+  USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
   
 //  /* Turn Modem on */
   GPIO_ResetBits(GPIOA, GPIO_Pin_8);
@@ -125,10 +118,10 @@ static void modemSend(const char *str)
 {
   for(int i = 0; str[i] != 0; i++)
   {
-    USART_SendData(USART2, (uint8_t) str[i]);
+    USART_SendData(USART1, (uint8_t) str[i]);
     
     /* Loop until the end of transmission */
-    while (USART_GetFlagStatus(USART2, USART_FLAG_TC) == RESET)
+    while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET)
     {}
   }
 }
@@ -139,37 +132,37 @@ static int waitResponse(const char *target, int numChar)
     int i = 0;
     int j;
     int k;
-    USART_ITConfig(USART2, USART_IT_RXNE, DISABLE);
+    USART_ITConfig(USART1, USART_IT_RXNE, DISABLE);
     while( i == 0 || (rx_line[i-1] != '\n'))
     {
       j = rx_in;
       k = rx_out;
       if (j == k)
       {
-        USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
+        USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
         do {
            j = rx_in;
            k = rx_out;
         } while( j == k);
-        USART_ITConfig(USART2, USART_IT_RXNE, DISABLE);
+        USART_ITConfig(USART1, USART_IT_RXNE, DISABLE);
       }
       rx_line[i] = rx_buffer[rx_out];
       i++;
       rx_out = (rx_out+1) % RX_BUFFER_SIZE;
     }
-    USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
+    USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
     rx_line[i-1] = 0;
   } while(strncmp(rx_line,target,numChar));
   return 0;
 }
 
-void Modem_USART2_IRQ()
+void Modem_USART1_IRQ()
 {
-  if(USART_GetITStatus(USART2, USART_IT_RXNE) == SET)
+  if(USART_GetITStatus(USART1, USART_IT_RXNE) == SET)
   {
-    while((USART_GetFlagStatus(USART2, USART_FLAG_RXNE) == SET) && (RX_CIRC_INC(rx_in) != rx_out))
+    while((USART_GetFlagStatus(USART1, USART_FLAG_RXNE) == SET) && (RX_CIRC_INC(rx_in) != rx_out))
     {
-      rx_buffer[rx_in] = (char)USART_ReceiveData(USART2);
+      rx_buffer[rx_in] = (char)USART_ReceiveData(USART1);
       rx_in = RX_CIRC_INC(rx_in);
     }
   }

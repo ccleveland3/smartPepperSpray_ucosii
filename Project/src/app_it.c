@@ -20,7 +20,7 @@ void itInit()
   BSP_IntVectSet(BSP_INT_ID_DMA2_CH3, SD_ProcessDMAIRQ);
   BSP_IntVectSet(BSP_INT_ID_TIM6, DAC_TIM_IRQ);
   BSP_IntVectSet(BSP_INT_ID_EXTI0, Button_Handler);
-  BSP_IntVectSet(BSP_INT_ID_USART2, Modem_USART2_IRQ);
+  BSP_IntVectSet(BSP_INT_ID_USART1, Modem_USART1_IRQ);
   
   //  BSP_IntVectSet(BSP_INT_ID_EXTI15_10, TouchIRQ);        
 }
