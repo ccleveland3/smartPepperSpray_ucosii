@@ -61,14 +61,14 @@ static  void  App_TaskStart        (void    *p_arg);
 static  void  App_TaskKbd          (void    *p_arg);
 static  void  App_TouchTask        (void *p_arg);
 static  void  fault_err            (FRESULT rc);
-static void LCD_Display();
-static void KeyPad();
-static void Touch();
+static void LCD_Display(void);
+static void KeyPad(void);
+static void Touch(void);
 uint8_t DCMI_OV9655Config(void);
 void EXTILine0_Config(void);
 void DCMI_Config(void);
 void I2C1_Config(void);
-void Camera();
+void Camera(void);
 /* Private functions ---------------------------------------------------------*/
 /**
 * @brief  Main program.
@@ -372,7 +372,7 @@ static void Touch()
     tpy_sum >>= 4;
     
     sprintf(buffer,"x=%d, y=%d",tpx_sum,tpy_sum);
-    LCD_DisplayStringLine(0,buffer);
+    LCD_DisplayStringLine(0, (uint8_t *)buffer);
   }
 }
 

@@ -9,7 +9,7 @@
 #include "stm32f4_discovery_sdio_sd.h"
 #include "app_it.h"
 
-extern const unsigned char olaf_wav[];
+//extern const unsigned char olaf_wav[];
 extern uint8_t KeyPressFlg;
 
 void itInit()
@@ -49,7 +49,7 @@ void DAC_TIM_IRQ()
   if (TIM_GetITStatus(TIM6, TIM_IT_Update) != RESET)
   {
     //Write the little endian sound data to the big endian DAC
-    DAC_SetChannel2Data(DAC_Align_12b_L, (olaf_wav[count+1]<<8) | olaf_wav[count]);
+    //DAC_SetChannel2Data(DAC_Align_12b_L, (olaf_wav[count+1]<<8) | olaf_wav[count]);
     
     count += 2;
     if(count >= 576078)

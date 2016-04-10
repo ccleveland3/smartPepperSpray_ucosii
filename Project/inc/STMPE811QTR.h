@@ -152,7 +152,7 @@ extern "C" {
 #define IOE_IT_EXTI_PORT_SOURCE          GPIO_PinSource13
 #define IOE_IT_EXTI_PIN_SOURCE           GPIO_Pin_13
 #define IOE_IT_EXTI_IRQn                 EXTI15_10_IRQn
-  void IOE_EXTI_Config();
+  void IOE_EXTI_Config(void);
   
   /* I2C clock speed configuration (in Hz) 
   WARNING: 

@@ -221,7 +221,7 @@ static int32_t set_pic_count(void)
   if (f_mount(0, &filesys) != FR_OK) {
     return -1;
   }
-OSTimeDlyHMSM(0, 0, 0, 10);
+  OSTimeDlyHMSM(0, 0, 0, 10);
 
   ret = f_open(&file, "counter.dat", FA_OPEN_EXISTING | FA_WRITE);
   if (ret == FR_OK) {

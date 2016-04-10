@@ -9,8 +9,8 @@
 #ifndef __APP_IT_H
 #define __APP_IT_H
 extern uint8_t touched;
-void itInit();
-void TouchIRQ();
+void itInit(void);
+void TouchIRQ(void);
 void Button_Handler(void);
-void DAC_TIM_IRQ();
+void DAC_TIM_IRQ(void);
 #endif

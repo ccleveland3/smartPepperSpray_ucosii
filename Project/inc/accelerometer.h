@@ -7,7 +7,7 @@
 #ifndef __ACCELEROMETER_H
 #define __ACCELEROMETER_H
 
-void accelerometerCompassInit();
+void accelerometerCompassInit(void);
 void LSM303DLHC_CompassReadAcc(float* pfData);
 void LSM303DLHC_CompassReadMag (float* pfData);
 uint32_t LSM303DLHC_TIMEOUT_UserCallback(void);

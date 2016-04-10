@@ -7,7 +7,7 @@
 #ifndef __MODEM_H
 #define __MODEM_H
 
-void modemInit();
-void Modem_USART1_IRQ();
+void modemInit(void);
+void Modem_USART1_IRQ(void);
 
 #endif

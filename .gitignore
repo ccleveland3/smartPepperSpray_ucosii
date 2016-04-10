@@ -53,6 +53,9 @@ uCOS-II/Source/*.h
 *.crun
 *.wspos
 
+# keil specific fils
+Project/MDK-ARM/Discover-More/*
+*.natalie
 
 
 # =========================

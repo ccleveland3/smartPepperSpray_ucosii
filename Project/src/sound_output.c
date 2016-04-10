@@ -14,7 +14,7 @@ const uint16_t Sine12bit[32] = {
   3939, 3750, 3495, 3185, 2831, 2447, 2047, 1647, 1263, 909,
   599, 344, 155, 38, 0, 38, 155, 344, 599, 909, 1263, 1647};
 
-extern const unsigned char olaf_wav[];
+//extern const unsigned char olaf_wav[];
 
 static void soundOutput_GPIO_Init(void);
 static void TIM6_Config(void);

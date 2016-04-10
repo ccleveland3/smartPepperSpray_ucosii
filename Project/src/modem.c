@@ -19,10 +19,11 @@ char rx_response[RX_BUFFER_SIZE] = {0};
 
 static void modemSend(const char *str);
 static int waitResponse(const char *target, int numChar);
-static int modemGetNextLine();
-static int parseGPSData();
-void messageSend();
-void setupGPS();
+static int modemGetNextLine(void);
+static int parseGPSData(void);
+static int getResponse(const char *start, const char *end);
+void messageSend(void);
+void setupGPS(void);
 
 struct Gps {
   char utc[10];       //"hhmmss.ss"
@@ -180,9 +181,9 @@ void messageSend()
 
 void setupGPS()
 {
-  modemSend("AT$GPSAT=1");
+  modemSend("AT$GPSAT=1\r\n");
   waitResponse("OK",2);
-  modemSend("AT$GPSP=1");
+  modemSend("AT$GPSP=1\r\n");
   waitResponse("OK",2);
   
   //Get first location
@@ -198,13 +199,15 @@ static int parseGPSData()
   static struct Gps curGps;
   static char rawLatitude[]  = "ddmm.mmmmD";
   static char rawLongitude[] = "dddmm.mmmmmD";
+	double minutes;
+  double degrees;
   
   modemSend("AT$GPSACP\r\n");
   
-  if(getResponse("$GPSACP:", "OK"))
+  if(getResponse("$GPSACP:", "OK\r"))
   {  
     if(sscanf(rx_response + 9, \
-      "%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^\n]", \
+      "%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^\r]", \
         curGps.utc,rawLatitude,rawLongitude,curGps.hdop,curGps.altidude, \
           curGps.fix,curGps.cog,curGps.spkm,curGps.spkn,curGps.date, \
             curGps.nsat) == 11)
@@ -222,13 +225,13 @@ static int parseGPSData()
       rawLatitude[9]   = (char)NULL;
       rawLongitude[10] = (char)NULL;
       
-      double minutes = atof(rawLatitude + 2);
-      double degrees = minutes / 60;
+      minutes = atof(rawLatitude + 2);
+      degrees = minutes / 60;
       sprintf(curGps.latitude + 2, "%0.7lf", degrees);
       
-      minutes = atof(rawLongitude + 2);
+      minutes = atof(rawLongitude + 3);
       degrees = minutes / 60;
-      sprintf(curGps.longitude + 2, "%0.7lf", degrees);
+      sprintf(curGps.longitude + 3, "%0.7lf", degrees);
       
       curGps.latitude[1] = rawLatitude[0];
       curGps.latitude[2] = rawLatitude[1];
@@ -253,7 +256,8 @@ static int parseGPSData()
 
 static void modemSend(const char *str)
 {
-  for(int i = 0; str[i] != 0; i++)
+	int i;
+  for(i = 0; str[i] != 0; i++)
   {
     USART_SendData(USART1, (uint8_t) str[i]);
     
@@ -266,13 +270,15 @@ static void modemSend(const char *str)
 
 static int getResponse(const char *start, const char *end)
 {
+	int startSize = strlen(start);
+	int endSize   = strlen(end);
   rx_response[0] = (char)NULL;
   
   do {
     modemGetNextLine();
-  } while(strcmp(rx_line,start) || strcmp(rx_line,rx_error));
+  } while(strncmp(rx_line,start,startSize) && strcmp(rx_line,rx_error));
   
-  if(strcmp(rx_line,rx_error))
+  if(strcmp(rx_line,rx_error) == 0)
   {
     return 0;
   }
@@ -280,7 +286,7 @@ static int getResponse(const char *start, const char *end)
   strcpy(rx_response, rx_line);
   
   // Keep copying lines until we find the end, an error, or run out of memory
-  while(strcmp(rx_line,end) || strcmp(rx_line,rx_error))
+  while(strncmp(rx_line,end,endSize) && strcmp(rx_line,rx_error))
   {
     modemGetNextLine();
     if(strlen(rx_response) + strlen(rx_line) > RX_BUFFER_SIZE)
@@ -294,7 +300,7 @@ static int getResponse(const char *start, const char *end)
     }
   }
   
-  if(strcmp(rx_line,rx_error))
+  if(strcmp(rx_line,rx_error) == 0)
   {
     return 0;
   }
