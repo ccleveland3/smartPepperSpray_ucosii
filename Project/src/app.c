@@ -163,11 +163,14 @@ static  void  App_TouchTask (void *p_arg)
   (void)p_arg;
   
   LCD_Display();
- //KeyPad();
-  //Camera();
+  LCD_DisplayStringLine(4, "Modem Init");
   modemInit();
+  Camera();
+  messageSend();
+  OSTimeDlyHMSM(0, 0, 2, 0);
+  KeyPad();
   
-  LCD_DisplayStringLine(0,"Sucess");
+  //LCD_DisplayStringLine(0,"Sucess");
   
   
   while(1)
@@ -182,7 +185,7 @@ static  void  App_TouchTask (void *p_arg)
 
 static void Camera()
 {
-  //LCD_DisplayStringLine(LINE(2), "Say Cheese");  
+   
   /* OV9655 Camera Module configuration */
   if (DCMI_OV9655Config() == 0x00)
   {
@@ -203,8 +206,8 @@ static void Camera()
     /*init the picture count*/
     init_picture_count();
 
-    KeyPressFlg = 0;
-    while (1)
+    //KeyPressFlg = 0;
+    while (KeyPressFlg == 0)
     {
       /* Insert 100ms delay */
      OSTimeDlyHMSM(0, 0, 0, 100);
@@ -218,11 +221,12 @@ static void Camera()
           Capture_Image_TO_Bmp();
           LCD_SetDisplayWindow(0, 0, 320, 240);
           LCD_WriteRAM_Prepare();
-          DCMI_CaptureCmd(ENABLE);
+          //DCMI_CaptureCmd(ENABLE);
           capture_Flag = ENABLE;
         }			
       }
-    }  
+    }
+    
   } else {
     LCD_SetTextColor(LCD_COLOR_RED);
 
@@ -328,7 +332,7 @@ static void LCD_Display()
   /* Initialize the LCD */
   STM32f4_Discovery_LCD_Init();
   /* Clear the LCD */ 
-  LCD_Clear(LCD_COLOR_MAGENTA);
+ // LCD_Clear(LCD_COLOR_MAGENTA);
   
   /* Set the LCD Text size */
   LCD_SetFont(&Font16x24);
