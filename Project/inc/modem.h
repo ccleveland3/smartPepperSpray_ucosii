@@ -7,7 +7,10 @@
 #ifndef __MODEM_H
 #define __MODEM_H
 
-void modemInit(void);
+int modemInit(void);
 void Modem_USART1_IRQ(void);
+
+void smsSend(void);
+void pictureSend(void);
 
 #endif

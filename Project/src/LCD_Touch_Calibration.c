@@ -150,22 +150,22 @@ void Lcd_Touch_Calibration(void)
       OSTimeDlyHMSM(0, 0, 0, 200);
     }
 
-    ratio1 = (float)((point_Base[1].x - point_Base[0].x) + (point_Base[3].x - point_Base[2].x)) / 2.0;
-    ratio2 = (float)((right_upper_point.x - left_upper_point.x) + (right_down_point.x - left_down_point.x)) / 2.0;
+    ratio1 = (float)((point_Base[1].x - point_Base[0].x) + (point_Base[3].x - point_Base[2].x)) / 2.0f;
+    ratio2 = (float)((right_upper_point.x - left_upper_point.x) + (right_down_point.x - left_down_point.x)) / 2.0f;
     adjust_Para.xScale = ratio1 / ratio2;
 
     ratio1 = (float)((point_Base[2].y - point_Base[0].y) + 
-             (point_Base[3].y - point_Base[1].y)) / 2.0;
+             (point_Base[3].y - point_Base[1].y)) / 2.0f;
     ratio2 = (float)((left_down_point.y - left_upper_point.y) + 
-             (right_down_point.y - right_upper_point.y)) / 2.0;
+             (right_down_point.y - right_upper_point.y)) / 2.0f;
     adjust_Para.yScale = ratio1 / ratio2;
 
     ratio1 = (((float)right_upper_point.x * adjust_Para.xScale - (float)point_Base[1].x)
-             + ((float)left_upper_point.x * adjust_Para.xScale - (float)point_Base[0].x)) / 2.0;
+             + ((float)left_upper_point.x * adjust_Para.xScale - (float)point_Base[0].x)) / 2.0f;
     adjust_Para.xOffset = (int)ratio1;
 
     ratio1 = (((float)right_upper_point.y * adjust_Para.yScale - (float)point_Base[1].y)
-             + ((float)left_upper_point.y * adjust_Para.yScale - (float)point_Base[0].y)) / 2.0;
+             + ((float)left_upper_point.y * adjust_Para.yScale - (float)point_Base[0].y)) / 2.0f;
 
     adjust_Para.yOffset = (int)ratio1; 
 

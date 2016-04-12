@@ -17,10 +17,7 @@
   * CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
   ******************************************************************************
   */
-#include <stdio.h>
-#include <string.h>
-#include "stm32f4_discovery_lcd.h"
-#include "ff.h"
+#include "includes.h"
 #include "main.h"
 
 /* Private macro -------------------------------------------------------------*/

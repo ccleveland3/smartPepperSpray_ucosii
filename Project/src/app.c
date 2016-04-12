@@ -164,9 +164,14 @@ static  void  App_TouchTask (void *p_arg)
   
   LCD_Display();
   LCD_DisplayStringLine(4, "Modem Init");
-  modemInit();
+  if(!modemInit())
+	{
+		LCD_DisplayStringLine(4, "Modem Init Failed!");
+		while(1);
+	}
   Camera();
-  messageSend();
+	pictureSend();
+  //smsSend();
   OSTimeDlyHMSM(0, 0, 2, 0);
   KeyPad();
   

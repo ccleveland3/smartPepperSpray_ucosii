@@ -8,7 +8,7 @@
 #define RX_BUFFER_SIZE 255
 #define RX_CIRC_INC(x) ((x + 1) % RX_BUFFER_SIZE)
 
-static const char rx_error[] = "ERROR";
+static const char rx_error[] = "ERROR\r";
 
 static volatile char rx_buffer[RX_BUFFER_SIZE] = {0};
 static volatile int rx_in  = 0;
@@ -22,13 +22,14 @@ static int waitResponse(const char *target, int numChar);
 static int modemGetNextLine(void);
 static int parseGPSData(void);
 static int getResponse(const char *start, const char *end);
-void messageSend(void);
+void smsSend(void);
 void setupGPS(void);
+void pictureSend(void);
 
 struct Gps {
   char utc[10];       //"hhmmss.ss"
-  char latitude[12];  //"+dd.ddddddd"
-  char longitude[13]; //"-ddd.ddddddd"
+  char googleLatitude[12];  //"+dd.ddddddd"
+  char googleLongitude[13]; //"-ddd.ddddddd"
   char hdop[4];       //"x.x"
   char altidude[7];   //"xxxx.x"
   char fix[2];        //"x"
@@ -45,7 +46,7 @@ struct Gps lastGPS = {"hhmmss.ss", "+dd.ddddddd", "-ddd.ddddddd", "x.x", \
 //Must add latitude,longitude to the end and keep the total characters under 150
 const char textMessage[68] = "COME HELP PLEASE! https://www.google.com/maps/dir/Current+Location/";
 
-void modemInit()
+int modemInit()
 {
   USART_InitTypeDef USART_InitStructure;
   GPIO_InitTypeDef GPIO_InitStructure;
@@ -135,8 +136,15 @@ void modemInit()
   GPIO_ResetBits(GPIOA, GPIO_Pin_8);
   
   /* Turn off echo */
-  modemSend("XATE0\r\n"); 
-  waitResponse("OK",2);
+  modemSend("XATE0\r\n");
+  if(!waitResponse("OK",2))
+	{
+		modemSend("ATE0\r\n");
+		if(!waitResponse("OK",2))
+		{
+			return 0;
+		}
+	}
   //    modemSend("AT$GPSSLSR=2,3\r\n");
   // waitResponse("OK",2);
   //  modemSend("AT$GPSP=1");
@@ -149,14 +157,15 @@ void modemInit()
   //  waitResponse("OK",2);
   
   
-  //messageSend();
+  //smsSend();
   setupGPS();
-  
+	
+	return 1;
 }
 
 
 
-void messageSend()
+void smsSend()
 {
   // Update the GPS data if possible, if it fails, then send the last known
   // position
@@ -166,13 +175,13 @@ void messageSend()
   modemSend("AT+CMGF=1\r\n");
   waitResponse("OK",2);
   OSTimeDlyHMSM(0, 0, 0, 50);
-  modemSend("AT+CMGS=\"+15306809928\"\r\n");
+  modemSend("AT+CMGS=\"+15303219087\"\r\n");
   OSTimeDlyHMSM(0, 0, 0, 50);
   
   modemSend(textMessage);       //67
-  modemSend(lastGPS.latitude);  //11
+  modemSend(lastGPS.googleLatitude);  //11
   modemSend(",");               //1
-  modemSend(lastGPS.longitude); //12
+  modemSend(lastGPS.googleLongitude); //12
   modemSend("  This is only a test of Smart Pepper Spray\x1A"); //43, total 134
   
   waitResponse("+CMGS:xx",2);
@@ -182,8 +191,12 @@ void messageSend()
 void setupGPS()
 {
   modemSend("AT$GPSAT=1\r\n");
+	//Ok if modem responds with ERROR, this means GPS is already powering the GPS
+	//antenna
   waitResponse("OK",2);
+	
   modemSend("AT$GPSP=1\r\n");
+	//Ok if modem responds with ERROR, this means GPS is already powered
   waitResponse("OK",2);
   
   //Get first location
@@ -219,26 +232,26 @@ static int parseGPSData()
       //dddmm.mmmmD where ddd is degrees from 000 to 180, mm.mmmm is minutes
       //from 00.0000 to 59.9999, and D is either E for east or W for west.
       
-      curGps.latitude[0]  = (rawLatitude[9]   == 'N') ? '+' : '-';
-      curGps.longitude[0] = (rawLongitude[10] == 'E') ? '+' : '-';
+      curGps.googleLatitude[0]  = (rawLatitude[9]   == 'N') ? '+' : '-';
+      curGps.googleLongitude[0] = (rawLongitude[10] == 'E') ? '+' : '-';
       
       rawLatitude[9]   = (char)NULL;
       rawLongitude[10] = (char)NULL;
       
       minutes = atof(rawLatitude + 2);
       degrees = minutes / 60;
-      sprintf(curGps.latitude + 2, "%0.7lf", degrees);
+      sprintf(curGps.googleLatitude + 2, "%0.7lf", degrees);
       
       minutes = atof(rawLongitude + 3);
       degrees = minutes / 60;
-      sprintf(curGps.longitude + 3, "%0.7lf", degrees);
+      sprintf(curGps.googleLongitude + 3, "%0.7lf", degrees);
       
-      curGps.latitude[1] = rawLatitude[0];
-      curGps.latitude[2] = rawLatitude[1];
+      curGps.googleLatitude[1] = rawLatitude[0];
+      curGps.googleLatitude[2] = rawLatitude[1];
       
-      curGps.longitude[1] = rawLongitude[0];
-      curGps.longitude[2] = rawLongitude[1];
-      curGps.longitude[3] = rawLongitude[2];
+      curGps.googleLongitude[1] = rawLongitude[0];
+      curGps.googleLongitude[2] = rawLongitude[1];
+      curGps.googleLongitude[3] = rawLongitude[2];
       
       memcpy(&lastGPS, &curGps, sizeof(struct Gps));
       
@@ -254,6 +267,32 @@ static int parseGPSData()
   return 0;
 }
 
+void pictureSend()
+{
+	modemSend("AT#SGACT=3,1\r\n");
+	//Okay if it returns error, the PDP context may already be active.
+	waitResponse("OK", 2);
+	
+	modemSend("AT#SD=3,0,80,\"m2.exosite.com\"\r\n");
+	if(!waitResponse("CONNECT", 7))
+		return;
+	
+	modemSend("POST /onep:v1/stack/alias HTTP/1.1\x0A");
+	modemSend("Host: m2.exosite.com\x0A");
+	modemSend("X-Exosite-CIK: 312330d15297814c0855f25f6d6bda93d10b450f\x0A");
+	modemSend("Content-Type: application/x-www-form-urlencoded; charset=utf-8\x0A");
+	modemSend("Accept: application/x-www-form-urlencoded\x0A");
+	modemSend("Content-Length: 27\x0A\x0A");
+	modemSend("GPSdata=1010.1010_2020.2020");
+	
+	//OSTimeDlyHMSM(0, 0, 1, 0);
+	waitResponse("Content-Length: 0", 17);
+	//modemSend("+++\n");
+	waitResponse("NO CARRIER", 10);
+	
+	modemSend("AT#SH=3\r\n");
+	waitResponse("OK", 2);
+}
 static void modemSend(const char *str)
 {
 	int i;
@@ -311,8 +350,13 @@ static int waitResponse(const char *target, int numChar)
 {
   do{
     modemGetNextLine();
-  } while(strncmp(rx_line,target,numChar));
-  return 0;
+  } while(strncmp(rx_line,target,numChar) && strcmp(rx_line,rx_error));
+  
+  if(strcmp(rx_line,rx_error) == 0)
+  {
+    return 0;
+  }
+  return 1;
 }
 
 static int modemGetNextLine()
