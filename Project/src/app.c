@@ -43,6 +43,7 @@ SD_Error Status = SD_OK;
 FATFS filesystem;		/* volume lable */
 FRESULT ret;			/* Result code */
 FIL file;			/* File object */
+FIL MyFile, MyFile1;
 DIR dir;			/* Directory object */
 FILINFO fno;			/* File information object */
 UINT bw, br;
@@ -50,6 +51,10 @@ uint8_t buff[128];
 uint8_t touched = 0;
 uint8_t KeyPressFlg = 0;
 uint8_t capture_Flag = ENABLE;
+uint8_t   _aucLine[1024];
+RGB_typedef *RGB_matrix;
+uint32_t line_counter = 0;
+
 
 
 //static TS_STATE ts_State;
@@ -69,6 +74,8 @@ void EXTILine0_Config(void);
 void DCMI_Config(void);
 void I2C1_Config(void);
 void Camera(void);
+uint8_t Jpeg_CallbackFunction(uint8_t* Row, uint32_t DataLength);
+
 /* Private functions ---------------------------------------------------------*/
 /**
 * @brief  Main program.
@@ -104,6 +111,38 @@ int  main (void)
   return (0);
 }
 
+void jpeg_test()
+{
+	//if (f_mount(0, &filesystem) != FR_OK)
+	//{
+    //printf("could not open filesystem \n\r");
+	  if(f_open(&MyFile1, "image.jpg", FA_CREATE_ALWAYS | FA_WRITE) == FR_OK)
+    {
+      /*##-5- Open the BMP image with read access ##########################*/
+      if(f_open(&MyFile, "image.bmp", FA_READ) == FR_OK)
+      {         
+        /*##-6- Jpeg encoding ##############################################*/
+        jpeg_encode(&MyFile, &MyFile1, IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_QUALITY, _aucLine);
+                   
+        /* Close the BMP and JPEG files */
+        f_close(&MyFile1);
+        f_close(&MyFile);
+          
+        /*##-7- Jpeg decoding ##############################################*/
+        /* Open the BMP file for read */
+        //if(f_open(&MyFile1, "image.jpg", FA_READ) == FR_OK)
+        //{          
+        //  /* Jpeg Decoding for display to LCD */
+        //  jpeg_decode(&MyFile1, IMAGE_WIDTH, _aucLine, Jpeg_CallbackFunction);
+        //    
+        //  /* Close the BMP file */
+        //  f_close(&MyFile1);   
+        //}
+      }
+    }
+  //}
+}
+
 /**
 * @brief  The startup task.  The uC/OS-II ticker should only be initialize
 *         once multitasking starts.
@@ -123,6 +162,7 @@ static  void  App_TaskStart (void *p_arg)
   itInit();
     EXTILine0_Config();
  DCMI_Control_IO_Init();
+	LCD_Display();
   //sineWave_init();
 
 #if (OS_TASK_STAT_EN > 0)
@@ -132,12 +172,16 @@ static  void  App_TaskStart (void *p_arg)
   /* Create application events. */
   App_EventCreate();
   /* Create application tasks. */
-  App_TaskCreate();
+  //App_TaskCreate();
 
   /* mount the filesystem */
   if (f_mount(0, &filesystem) != FR_OK) {
     //printf("could not open filesystem \n\r");
   }
+	
+	LCD_DisplayStringLine(4, (uint8_t *)"Start");
+	jpeg_test();
+	LCD_DisplayStringLine(4, (uint8_t *)"Done!");
   OSTimeDlyHMSM(0, 0, 0, 10);
 //  WaveRecorderUpdate();
 //
@@ -162,7 +206,7 @@ static  void  App_TouchTask (void *p_arg)
 {  
   (void)p_arg;
   
-  LCD_Display();
+  
   LCD_DisplayStringLine(4, "Modem Init");
   if(!modemInit())
 	{
@@ -666,6 +710,83 @@ static  void  App_TaskKbd (void *p_arg)
     }
     OSTimeDlyHMSM(0, 0, 0, 20);
   }
+}
+
+/**
+  * @brief  Copy decompressed data to display buffer.
+  * @param  Row: Output row buffer
+  * @param  DataLength: Row width in output buffer
+  * @retval None
+  */
+uint8_t Jpeg_CallbackFunction(uint8_t* Row, uint32_t DataLength)
+{
+#ifdef SWAP_RB 
+  uint32_t pixel = 0, width_counter, result = 0, result1 = 0;
+#endif
+
+#ifdef USE_DMA2D  
+  static DMA2D_HandleTypeDef hdma2d_eval;
+  
+  offset = (LCD_FRAME_BUFFER + (IMAGE_WIDTH * (IMAGE_HEIGHT - line_counter - 1) * 4));
+  /* Configure the DMA2D Mode, Color Mode and output offset */
+  hdma2d_eval.Init.Mode         = DMA2D_M2M_PFC;
+  hdma2d_eval.Init.ColorMode    = DMA2D_ARGB8888;
+  hdma2d_eval.Init.OutputOffset = 0;     
+  
+  /* Foreground Configuration */
+  hdma2d_eval.LayerCfg[1].AlphaMode = DMA2D_NO_MODIF_ALPHA;
+  hdma2d_eval.LayerCfg[1].InputAlpha = 0xFF;
+  hdma2d_eval.LayerCfg[1].InputColorMode = CM_RGB888;
+  hdma2d_eval.LayerCfg[1].InputOffset = 0;
+  
+  hdma2d_eval.Instance = DMA2D; 
+  
+  /* DMA2D Initialization */
+  if(HAL_DMA2D_Init(&hdma2d_eval) == HAL_OK) 
+  {
+    if(HAL_DMA2D_ConfigLayer(&hdma2d_eval, 1) == HAL_OK) 
+    {
+      if (HAL_DMA2D_Start(&hdma2d_eval, (uint32_t)Row, (uint32_t)offset, IMAGE_WIDTH, 1) == HAL_OK)
+      {
+        /* Polling For DMA transfer */  
+        HAL_DMA2D_PollForTransfer(&hdma2d_eval, 10);
+      }
+    }
+  }
+#else /* DMA2D not used */
+	uint32_t  ARGB32Buffer[IMAGE_WIDTH];
+	uint32_t counter = 0;
+  RGB_matrix =  (RGB_typedef*)Row;
+  
+  
+  for(counter = 0; counter < IMAGE_WIDTH; counter++)
+  {
+    ARGB32Buffer[counter]  = (uint32_t)
+      (
+       ((RGB_matrix[counter].B << 16)|
+        (RGB_matrix[counter].G << 8)|
+          (RGB_matrix[counter].R) | 0xFF000000)
+         );
+    
+    *(__IO uint32_t *)(LCD_FRAME_BUFFER + (counter*4) + (IMAGE_WIDTH * (IMAGE_HEIGHT - line_counter - 1) * 4)) = ARGB32Buffer[counter];
+  }  
+#endif
+  
+#ifdef SWAP_RB 
+  
+  for(width_counter = 0; width_counter < IMAGE_WIDTH; width_counter++)
+  {
+    pixel = *(__IO uint32_t *)(LCD_FRAME_BUFFER + (width_counter*4) + (IMAGE_WIDTH * (IMAGE_HEIGHT - line_counter - 1) * 4)); 
+    result1 = (((pixel & 0x00FF0000) >> 16) | ((pixel & 0x000000FF) << 16));
+    pixel = pixel & 0xFF00FF00;
+    result = (result1 | pixel);
+    *(__IO uint32_t *)(LCD_FRAME_BUFFER + (width_counter*4) + (IMAGE_WIDTH * (IMAGE_HEIGHT - line_counter - 1) * 4)) = result;
+    
+  }  
+#endif
+  
+  line_counter++;
+  return 0;
 }
 
 #if (OS_APP_HOOKS_EN > 0)

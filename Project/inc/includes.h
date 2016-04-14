@@ -26,6 +26,7 @@
 #include  <ctype.h>
 #include  <stdlib.h>
 #include  <stdarg.h>
+#include  <stdint.h>
 #include <STMPE811QTR.h>
 
 #include  "ucos_ii.h"
@@ -50,6 +51,9 @@
 #include "dcmi_ov9655.h"
 #include "bmp.h"
 #include "modem.h"
+#include "jpeglib.h"
+#include "decode.h"
+#include "encode.h"
 
 #endif /*__INCLUDES_H__*/
 
