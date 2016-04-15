@@ -51,7 +51,10 @@
   * @retval None
   */
 void jpeg_encode(FIL *file, FIL *file1, uint32_t width, uint32_t height, uint32_t image_quality, uint8_t * buff)
-{ 
+{
+#ifdef BMP_16BIT
+	int p16Index, p24Index;
+#endif
     
   /* Encode BMP Image to JPEG */  
   JSAMPROW row_pointer;    /* Pointer to a single row */
@@ -83,16 +86,52 @@ void jpeg_encode(FIL *file, FIL *file1, uint32_t width, uint32_t height, uint32_
   /* Step 4: start compressor */
   jpeg_start_compress(&cinfo, TRUE);
   
+  /* Bypass the header bmp file */
+#ifdef BMP_16BIT
+  f_read(file, buff, 70, (UINT*)&bytesread);
+#elif  BMP_24BIT
   f_read(file, buff, 54, (UINT*)&bytesread);
+#endif
   
   while (cinfo.next_scanline < cinfo.image_height)
   {          
-    
-    if(f_read(file, buff, width*3, (UINT*)&bytesread) == FR_OK)
+#ifdef BMP_16BIT
+    if(f_read(file, buff, width*2, (UINT*)&bytesread) == FR_OK)
+    {
+			// Convert to 24 bit because that is what the LibJPEG expects
+			// In order to not waste memory, we use the same buffer and start at the
+			// end and work our way to the beginning
+			for(p16Index = width*2 - 3, p24Index = width*3 - 1; p16Index > 0; p16Index -= 2)
+      {
+				//The 16 bit RGB code is 5-6-5
+				//Starting with blue
+				while(p24Index == p16Index + 1);
+				while(p24Index < 0);
+				while(p16Index < 0);
+				buff[p24Index--] = (buff[p16Index + 1] & 0x1F) << 3;
+				
+				//Green
+				while(p24Index == p16Index || p24Index == p16Index + 1);
+				while(p24Index < 0);
+				while(p16Index < 0);
+				buff[p24Index--] = (buff[p16Index] << 5) | ((buff[p16Index + 1] & 0xE0) >> 3);
+				
+				//Red
+				while(p24Index != 0 && p16Index!= 0 && p24Index == p16Index);
+				while(p24Index < 0);
+				while(p16Index < 0);
+				buff[p24Index--] = buff[p16Index] & 0xF8;
+      }
+      row_pointer = (JSAMPROW)buff;
+      jpeg_write_scanlines(&cinfo, &row_pointer, 1);          
+    }
+#elif  BMP_24BIT
+		if(f_read(file, buff, width*3, (UINT*)&bytesread) == FR_OK)
     {
       row_pointer = (JSAMPROW)buff;
       jpeg_write_scanlines(&cinfo, &row_pointer, 1);          
     }
+#endif
   }
   /* Step 5: finish compression */
   jpeg_finish_compress(&cinfo);

@@ -34,8 +34,8 @@ extern void free JPP((void *ptr));
 #define READ_BINARY	"rb", "ctx=stm"
 #define RW_BINARY	"w+b", "ctx=stm"
 #else				/* standard ANSI-compliant case */
-#define READ_BINARY	"rb"
-#define RW_BINARY	"w+b"
+#define READ_BINARY	FA_READ
+#define RW_BINARY	  (FA_READ | FA_WRITE)
 #endif
 #endif
 
@@ -94,13 +94,13 @@ extern int errno;
 LOCAL(void)
 select_file_name (char * fname)
 {
-  FILE * tfile;
+  FIL * tfile;
 
   /* Keep generating file names till we find one that's not in use */
   for (;;) {
     next_file_num++;		/* advance counter */
     sprintf(fname, TEMP_FILE_NAME, TEMP_DIRECTORY, next_file_num);
-    if ((tfile = fopen(fname, READ_BINARY)) == NULL) {
+    if ((f_open(tfile, fname, READ_BINARY)) != FR_OK) {
       /* fopen could have failed for a reason other than the file not
        * being there; for example, file there but unreadable.
        * If <errno.h> isn't available, then we cannot test the cause.
@@ -111,7 +111,7 @@ select_file_name (char * fname)
 #endif
       break;
     }
-    fclose(tfile);		/* oops, it's there; close tfile & try again */
+    f_close(tfile);		/* oops, it's there; close tfile & try again */
   }
 }
 
@@ -205,7 +205,7 @@ read_backing_store (j_common_ptr cinfo, backing_store_ptr info,
 		    void FAR * buffer_address,
 		    long file_offset, long byte_count)
 {
-  if (fseek(info->temp_file, file_offset, SEEK_SET))
+  if (f_lseek(info->temp_file, file_offset))
     ERREXIT(cinfo, JERR_TFILE_SEEK);
   if (JFREAD(info->temp_file, buffer_address, byte_count)
       != (size_t) byte_count)
@@ -218,7 +218,7 @@ write_backing_store (j_common_ptr cinfo, backing_store_ptr info,
 		     void FAR * buffer_address,
 		     long file_offset, long byte_count)
 {
-  if (fseek(info->temp_file, file_offset, SEEK_SET))
+  if (f_lseek(info->temp_file, file_offset))
     ERREXIT(cinfo, JERR_TFILE_SEEK);
   if (JFWRITE(info->temp_file, buffer_address, byte_count)
       != (size_t) byte_count)
@@ -229,8 +229,8 @@ write_backing_store (j_common_ptr cinfo, backing_store_ptr info,
 METHODDEF(void)
 close_backing_store (j_common_ptr cinfo, backing_store_ptr info)
 {
-  fclose(info->temp_file);	/* close the file */
-  unlink(info->temp_name);	/* delete the file */
+  f_close(info->temp_file);	/* close the file */
+  f_unlink(info->temp_name);	/* delete the file */
 /* If your system doesn't have unlink(), use remove() instead.
  * remove() is the ANSI-standard name for this function, but if
  * your system was ANSI you'd be using jmemansi.c, right?
@@ -248,7 +248,7 @@ jpeg_open_backing_store (j_common_ptr cinfo, backing_store_ptr info,
 			 long total_bytes_needed)
 {
   select_file_name(info->temp_name);
-  if ((info->temp_file = fopen(info->temp_name, RW_BINARY)) == NULL)
+  if ((f_open(info->temp_file, info->temp_name, RW_BINARY)) != FR_OK)
     ERREXITS(cinfo, JERR_TFILE_CREATE, info->temp_name);
   info->read_backing_store = read_backing_store;
   info->write_backing_store = write_backing_store;

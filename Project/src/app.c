@@ -74,7 +74,7 @@ void EXTILine0_Config(void);
 void DCMI_Config(void);
 void I2C1_Config(void);
 void Camera(void);
-uint8_t Jpeg_CallbackFunction(uint8_t* Row, uint32_t DataLength);
+static uint8_t Jpeg_CallbackFunction(uint8_t* Row, uint32_t DataLength);
 
 /* Private functions ---------------------------------------------------------*/
 /**
@@ -113,8 +113,8 @@ int  main (void)
 
 void jpeg_test()
 {
-	//if (f_mount(0, &filesystem) != FR_OK)
-	//{
+	if (f_mount(0, &filesystem) == FR_OK)
+	{
     //printf("could not open filesystem \n\r");
 	  if(f_open(&MyFile1, "image.jpg", FA_CREATE_ALWAYS | FA_WRITE) == FR_OK)
     {
@@ -123,24 +123,27 @@ void jpeg_test()
       {         
         /*##-6- Jpeg encoding ##############################################*/
         jpeg_encode(&MyFile, &MyFile1, IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_QUALITY, _aucLine);
+				//jpeg_decode(&MyFile1, IMAGE_WIDTH, _aucLine, Jpeg_CallbackFunction);
+				//jpeg_decode(&MyFile1, IMAGE_WIDTH, _aucLine, Jpeg_CallbackFunction);
                    
         /* Close the BMP and JPEG files */
         f_close(&MyFile1);
         f_close(&MyFile);
           
         /*##-7- Jpeg decoding ##############################################*/
-        /* Open the BMP file for read */
-        //if(f_open(&MyFile1, "image.jpg", FA_READ) == FR_OK)
-        //{          
-        //  /* Jpeg Decoding for display to LCD */
-        //  jpeg_decode(&MyFile1, IMAGE_WIDTH, _aucLine, Jpeg_CallbackFunction);
-        //    
-        //  /* Close the BMP file */
-        //  f_close(&MyFile1);   
-        //}
+        /* Open the JPEG file for read */
+        if(f_open(&MyFile1, "image.jpg", FA_READ) == FR_OK)
+        {          
+          /* Jpeg Decoding for display to LCD */
+          jpeg_decode(&MyFile1, IMAGE_WIDTH, _aucLine, Jpeg_CallbackFunction);
+            
+          /* Close the JPEG file */
+          f_close(&MyFile1);   
+        }
       }
     }
-  //}
+		f_mount(0, NULL);
+  }
 }
 
 /**
@@ -172,16 +175,13 @@ static  void  App_TaskStart (void *p_arg)
   /* Create application events. */
   App_EventCreate();
   /* Create application tasks. */
-  //App_TaskCreate();
+  App_TaskCreate();
 
   /* mount the filesystem */
-  if (f_mount(0, &filesystem) != FR_OK) {
+//  if (f_mount(0, &filesystem) != FR_OK) {
     //printf("could not open filesystem \n\r");
-  }
+//  }
 	
-	LCD_DisplayStringLine(4, (uint8_t *)"Start");
-	jpeg_test();
-	LCD_DisplayStringLine(4, (uint8_t *)"Done!");
   OSTimeDlyHMSM(0, 0, 0, 10);
 //  WaveRecorderUpdate();
 //
@@ -207,17 +207,22 @@ static  void  App_TouchTask (void *p_arg)
   (void)p_arg;
   
   
-  LCD_DisplayStringLine(4, "Modem Init");
-  if(!modemInit())
-	{
-		LCD_DisplayStringLine(4, "Modem Init Failed!");
-		while(1);
-	}
+  //LCD_DisplayStringLine(4, (uint8_t *)"Modem Init");
+  //if(!modemInit())
+	//{
+	//	LCD_DisplayStringLine(4, (uint8_t *)"Modem Init Failed!");
+	//	while(1);
+	//}
   Camera();
-	pictureSend();
+	
+	LCD_DisplayStringLine(4, (uint8_t *)"Start");
+	jpeg_test();
+	LCD_DisplayStringLine(4, (uint8_t *)"Done!");
+	
+	//pictureSend();
   //smsSend();
   OSTimeDlyHMSM(0, 0, 2, 0);
-  KeyPad();
+  //KeyPad();
   
   //LCD_DisplayStringLine(0,"Sucess");
   
@@ -718,72 +723,25 @@ static  void  App_TaskKbd (void *p_arg)
   * @param  DataLength: Row width in output buffer
   * @retval None
   */
-uint8_t Jpeg_CallbackFunction(uint8_t* Row, uint32_t DataLength)
+static uint8_t Jpeg_CallbackFunction(uint8_t* Row, uint32_t DataLength)
 {
-#ifdef SWAP_RB 
-  uint32_t pixel = 0, width_counter, result = 0, result1 = 0;
-#endif
-
-#ifdef USE_DMA2D  
-  static DMA2D_HandleTypeDef hdma2d_eval;
-  
-  offset = (LCD_FRAME_BUFFER + (IMAGE_WIDTH * (IMAGE_HEIGHT - line_counter - 1) * 4));
-  /* Configure the DMA2D Mode, Color Mode and output offset */
-  hdma2d_eval.Init.Mode         = DMA2D_M2M_PFC;
-  hdma2d_eval.Init.ColorMode    = DMA2D_ARGB8888;
-  hdma2d_eval.Init.OutputOffset = 0;     
-  
-  /* Foreground Configuration */
-  hdma2d_eval.LayerCfg[1].AlphaMode = DMA2D_NO_MODIF_ALPHA;
-  hdma2d_eval.LayerCfg[1].InputAlpha = 0xFF;
-  hdma2d_eval.LayerCfg[1].InputColorMode = CM_RGB888;
-  hdma2d_eval.LayerCfg[1].InputOffset = 0;
-  
-  hdma2d_eval.Instance = DMA2D; 
-  
-  /* DMA2D Initialization */
-  if(HAL_DMA2D_Init(&hdma2d_eval) == HAL_OK) 
-  {
-    if(HAL_DMA2D_ConfigLayer(&hdma2d_eval, 1) == HAL_OK) 
-    {
-      if (HAL_DMA2D_Start(&hdma2d_eval, (uint32_t)Row, (uint32_t)offset, IMAGE_WIDTH, 1) == HAL_OK)
-      {
-        /* Polling For DMA transfer */  
-        HAL_DMA2D_PollForTransfer(&hdma2d_eval, 10);
-      }
-    }
-  }
-#else /* DMA2D not used */
-	uint32_t  ARGB32Buffer[IMAGE_WIDTH];
-	uint32_t counter = 0;
+	uint32_t i = 0;
   RGB_matrix =  (RGB_typedef*)Row;
+  uint16_t  RGB16Buffer[IMAGE_WIDTH];
   
-  
-  for(counter = 0; counter < IMAGE_WIDTH; counter++)
+  for(i = 0; i < IMAGE_WIDTH; i++)
   {
-    ARGB32Buffer[counter]  = (uint32_t)
+    RGB16Buffer[i]  = (uint16_t)
       (
-       ((RGB_matrix[counter].B << 16)|
-        (RGB_matrix[counter].G << 8)|
-          (RGB_matrix[counter].R) | 0xFF000000)
-         );
-    
-    *(__IO uint32_t *)(LCD_FRAME_BUFFER + (counter*4) + (IMAGE_WIDTH * (IMAGE_HEIGHT - line_counter - 1) * 4)) = ARGB32Buffer[counter];
-  }  
-#endif
-  
-#ifdef SWAP_RB 
-  
-  for(width_counter = 0; width_counter < IMAGE_WIDTH; width_counter++)
-  {
-    pixel = *(__IO uint32_t *)(LCD_FRAME_BUFFER + (width_counter*4) + (IMAGE_WIDTH * (IMAGE_HEIGHT - line_counter - 1) * 4)); 
-    result1 = (((pixel & 0x00FF0000) >> 16) | ((pixel & 0x000000FF) << 16));
-    pixel = pixel & 0xFF00FF00;
-    result = (result1 | pixel);
-    *(__IO uint32_t *)(LCD_FRAME_BUFFER + (width_counter*4) + (IMAGE_WIDTH * (IMAGE_HEIGHT - line_counter - 1) * 4)) = result;
-    
-  }  
-#endif
+       ((RGB_matrix[i].B & 0x00F8) >> 3)|
+       ((RGB_matrix[i].G & 0x00FC) << 3)|
+       ((RGB_matrix[i].R & 0x00F8) << 8)
+             );
+    LCD_SetTextColor(RGB16Buffer[i]);
+		//LCD_DrawLine(i, IMAGE_HEIGHT - line_counter - 1, 1, LCD_DIR_HORIZONTAL);
+		LCD_DrawLine(i, line_counter, 1, LCD_DIR_HORIZONTAL);
+
+  }
   
   line_counter++;
   return 0;

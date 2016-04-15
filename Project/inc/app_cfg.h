@@ -45,15 +45,13 @@ typedef struct RGB
   uint8_t R;
 }RGB_typedef;
 
-//#define IMAGE_HEIGHT 240
-//#define IMAGE_WIDTH  320
-#define IMAGE_HEIGHT 10
-#define IMAGE_WIDTH  10
+#define IMAGE_HEIGHT 240
+#define IMAGE_WIDTH  320
 #define IMAGE_QUALITY 90
 #define LCD_FRAME_BUFFER 0xC0000000
 
 /* #define USE_DMA2D */
-#define SWAP_RB  
+#define SWAP_RB
 
 #endif
 

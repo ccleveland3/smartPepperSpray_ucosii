@@ -203,7 +203,7 @@
           <Type>0</Type>
           <LineNumber>200</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134222054</Address>
+          <Address>134218150</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -219,57 +219,27 @@
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>rx_line</ItemText>
+          <ItemText>jerr</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>start</ItemText>
+          <ItemText>MyFile</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>rx_buffer</ItemText>
+          <ItemText>MyFile1</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
           <WinNumber>1</WinNumber>
-          <ItemText>rx_response</ItemText>
+          <ItemText>bytesread,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>lastGPS</ItemText>
-        </Ww>
-        <Ww>
-          <count>5</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>rawLatitude</ItemText>
-        </Ww>
-        <Ww>
-          <count>6</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>rawLongitude</ItemText>
-        </Ww>
-        <Ww>
-          <count>7</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>rx_error</ItemText>
-        </Ww>
-        <Ww>
-          <count>8</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>file</ItemText>
-        </Ww>
-        <Ww>
-          <count>9</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>image_buf</ItemText>
-        </Ww>
-        <Ww>
-          <count>10</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>bw</ItemText>
+          <ItemText>_aucLine</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
@@ -515,7 +485,7 @@
 
   <Group>
     <GroupName>BSP</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -1159,7 +1129,7 @@
 
   <Group>
     <GroupName>LibJPEG</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -1170,8 +1140,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\LibJPEG\source\jccolor.c</PathWithFileName>
-      <FilenameWithoutPath>jccolor.c</FilenameWithoutPath>
+      <PathWithFileName>..\..\LibJPEG\source\jcmainct.c</PathWithFileName>
+      <FilenameWithoutPath>jcmainct.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1182,8 +1152,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\LibJPEG\source\jaricom.c</PathWithFileName>
-      <FilenameWithoutPath>jaricom.c</FilenameWithoutPath>
+      <PathWithFileName>..\..\LibJPEG\source\jdapistd.c</PathWithFileName>
+      <FilenameWithoutPath>jdapistd.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1206,8 +1176,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\LibJPEG\source\jquant1.c</PathWithFileName>
-      <FilenameWithoutPath>jquant1.c</FilenameWithoutPath>
+      <PathWithFileName>..\..\LibJPEG\source\jfdctint.c</PathWithFileName>
+      <FilenameWithoutPath>jfdctint.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1218,8 +1188,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\LibJPEG\source\jcparam.c</PathWithFileName>
-      <FilenameWithoutPath>jcparam.c</FilenameWithoutPath>
+      <PathWithFileName>..\..\LibJPEG\source\jcmarker.c</PathWithFileName>
+      <FilenameWithoutPath>jcmarker.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1230,8 +1200,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\LibJPEG\source\jdapimin.c</PathWithFileName>
-      <FilenameWithoutPath>jdapimin.c</FilenameWithoutPath>
+      <PathWithFileName>..\..\LibJPEG\source\jdhuff.c</PathWithFileName>
+      <FilenameWithoutPath>jdhuff.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1242,8 +1212,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\LibJPEG\source\jdcoefct.c</PathWithFileName>
-      <FilenameWithoutPath>jdcoefct.c</FilenameWithoutPath>
+      <PathWithFileName>..\..\LibJPEG\source\jmemnobs.c</PathWithFileName>
+      <FilenameWithoutPath>jmemnobs.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1254,8 +1224,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\LibJPEG\source\jfdctflt.c</PathWithFileName>
-      <FilenameWithoutPath>jfdctflt.c</FilenameWithoutPath>
+      <PathWithFileName>..\..\LibJPEG\source\jaricom.c</PathWithFileName>
+      <FilenameWithoutPath>jaricom.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1266,8 +1236,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\LibJPEG\source\jcsample.c</PathWithFileName>
-      <FilenameWithoutPath>jcsample.c</FilenameWithoutPath>
+      <PathWithFileName>..\..\LibJPEG\source\jmemmgr.c</PathWithFileName>
+      <FilenameWithoutPath>jmemmgr.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1290,74 +1260,14 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\LibJPEG\source\jmemmgr.c</PathWithFileName>
-      <FilenameWithoutPath>jmemmgr.c</FilenameWithoutPath>
+      <PathWithFileName>..\..\LibJPEG\source\jccolor.c</PathWithFileName>
+      <FilenameWithoutPath>jccolor.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>9</GroupNumber>
       <FileNumber>77</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\..\LibJPEG\source\jcmainct.c</PathWithFileName>
-      <FilenameWithoutPath>jcmainct.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>9</GroupNumber>
-      <FileNumber>78</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\..\LibJPEG\source\jdapistd.c</PathWithFileName>
-      <FilenameWithoutPath>jdapistd.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>9</GroupNumber>
-      <FileNumber>79</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\..\LibJPEG\source\jdhuff.c</PathWithFileName>
-      <FilenameWithoutPath>jdhuff.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>9</GroupNumber>
-      <FileNumber>80</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\..\LibJPEG\source\jdcolor.c</PathWithFileName>
-      <FilenameWithoutPath>jdcolor.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>9</GroupNumber>
-      <FileNumber>81</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\..\LibJPEG\source\jidctint.c</PathWithFileName>
-      <FilenameWithoutPath>jidctint.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>9</GroupNumber>
-      <FileNumber>82</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1369,7 +1279,103 @@
     </File>
     <File>
       <GroupNumber>9</GroupNumber>
+      <FileNumber>78</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\..\LibJPEG\source\jidctint.c</PathWithFileName>
+      <FilenameWithoutPath>jidctint.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>9</GroupNumber>
+      <FileNumber>79</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\..\LibJPEG\source\jquant1.c</PathWithFileName>
+      <FilenameWithoutPath>jquant1.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>9</GroupNumber>
+      <FileNumber>80</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\..\LibJPEG\source\jcparam.c</PathWithFileName>
+      <FilenameWithoutPath>jcparam.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>9</GroupNumber>
+      <FileNumber>81</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\..\LibJPEG\source\jdapimin.c</PathWithFileName>
+      <FilenameWithoutPath>jdapimin.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>9</GroupNumber>
+      <FileNumber>82</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\..\LibJPEG\source\jdcoefct.c</PathWithFileName>
+      <FilenameWithoutPath>jdcoefct.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>9</GroupNumber>
       <FileNumber>83</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\..\LibJPEG\source\jfdctflt.c</PathWithFileName>
+      <FilenameWithoutPath>jfdctflt.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>9</GroupNumber>
+      <FileNumber>84</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\..\LibJPEG\source\jcsample.c</PathWithFileName>
+      <FilenameWithoutPath>jcsample.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>9</GroupNumber>
+      <FileNumber>85</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\..\LibJPEG\source\jdcolor.c</PathWithFileName>
+      <FilenameWithoutPath>jdcolor.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>9</GroupNumber>
+      <FileNumber>86</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1381,7 +1387,7 @@
     </File>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>84</FileNumber>
+      <FileNumber>87</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1393,7 +1399,7 @@
     </File>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>85</FileNumber>
+      <FileNumber>88</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1405,7 +1411,7 @@
     </File>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>86</FileNumber>
+      <FileNumber>89</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1417,7 +1423,7 @@
     </File>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>87</FileNumber>
+      <FileNumber>90</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1429,7 +1435,7 @@
     </File>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>88</FileNumber>
+      <FileNumber>91</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1441,7 +1447,7 @@
     </File>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>89</FileNumber>
+      <FileNumber>92</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1453,19 +1459,7 @@
     </File>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>90</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\..\LibJPEG\source\jfdctint.c</PathWithFileName>
-      <FilenameWithoutPath>jfdctint.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>9</GroupNumber>
-      <FileNumber>91</FileNumber>
+      <FileNumber>93</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1477,7 +1471,7 @@
     </File>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>92</FileNumber>
+      <FileNumber>94</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1489,7 +1483,7 @@
     </File>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>93</FileNumber>
+      <FileNumber>95</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1501,37 +1495,13 @@
     </File>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>94</FileNumber>
+      <FileNumber>96</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\LibJPEG\source\jidctfst.c</PathWithFileName>
       <FilenameWithoutPath>jidctfst.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>9</GroupNumber>
-      <FileNumber>95</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\..\LibJPEG\source\jdarith.c</PathWithFileName>
-      <FilenameWithoutPath>jdarith.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>9</GroupNumber>
-      <FileNumber>96</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\..\LibJPEG\source\jerror.c</PathWithFileName>
-      <FilenameWithoutPath>jerror.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1554,6 +1524,30 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
+      <PathWithFileName>..\..\LibJPEG\source\jdarith.c</PathWithFileName>
+      <FilenameWithoutPath>jdarith.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>9</GroupNumber>
+      <FileNumber>99</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\..\LibJPEG\source\jerror.c</PathWithFileName>
+      <FilenameWithoutPath>jerror.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>9</GroupNumber>
+      <FileNumber>100</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
       <PathWithFileName>..\..\LibJPEG\source\jdtrans.c</PathWithFileName>
       <FilenameWithoutPath>jdtrans.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
@@ -1561,7 +1555,7 @@
     </File>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>99</FileNumber>
+      <FileNumber>101</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1573,7 +1567,7 @@
     </File>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>100</FileNumber>
+      <FileNumber>102</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1585,7 +1579,7 @@
     </File>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>101</FileNumber>
+      <FileNumber>103</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1597,7 +1591,7 @@
     </File>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>102</FileNumber>
+      <FileNumber>104</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1609,19 +1603,7 @@
     </File>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>103</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\..\LibJPEG\source\jmemnobs.c</PathWithFileName>
-      <FilenameWithoutPath>jmemnobs.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>9</GroupNumber>
-      <FileNumber>104</FileNumber>
+      <FileNumber>105</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1633,7 +1615,7 @@
     </File>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>105</FileNumber>
+      <FileNumber>106</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1645,7 +1627,7 @@
     </File>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>106</FileNumber>
+      <FileNumber>107</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1657,7 +1639,7 @@
     </File>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>107</FileNumber>
+      <FileNumber>108</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1669,7 +1651,7 @@
     </File>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>108</FileNumber>
+      <FileNumber>109</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1681,25 +1663,13 @@
     </File>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>109</FileNumber>
+      <FileNumber>110</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\LibJPEG\source\jquant2.c</PathWithFileName>
       <FilenameWithoutPath>jquant2.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>9</GroupNumber>
-      <FileNumber>110</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\..\LibJPEG\source\jcmarker.c</PathWithFileName>
-      <FilenameWithoutPath>jcmarker.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

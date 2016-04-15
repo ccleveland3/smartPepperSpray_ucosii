@@ -354,7 +354,7 @@
             <Optim>2</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
-            <OneElfS>0</OneElfS>
+            <OneElfS>1</OneElfS>
             <Strict>0</Strict>
             <EnumInt>0</EnumInt>
             <PlainCh>0</PlainCh>
@@ -370,7 +370,7 @@
             <vShortEn>0</vShortEn>
             <vShortWch>0</vShortWch>
             <VariousControls>
-              <MiscControls></MiscControls>
+              <MiscControls>--C99</MiscControls>
               <Define>STM32F4XX, USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
               <IncludePath>.;..\inc;..\..\CPU\ST\STM32\STM32F4xx_StdPeriph_Driver\inc;..\..\CPU\ST\STM32\STM32F4xx;..\..\uCOS-II\Ports\ARM-Cortex-M3\Generic\MDK-ARM;..\..\uCOS-II\Source;..\..\CPU\ST\STM32\inc;..\..\uC-CPU;..\..\uC-CPU\ARM-Cortex-M3\MDK-ARM;..\..\uC-LIB;..\Common;..\..\FatFs_vR0.08a;..\..\LibJPEG\include</IncludePath>
@@ -987,9 +987,39 @@
           <GroupName>LibJPEG</GroupName>
           <Files>
             <File>
-              <FileName>jccolor.c</FileName>
+              <FileName>jcmainct.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\LibJPEG\source\jccolor.c</FilePath>
+              <FilePath>..\..\LibJPEG\source\jcmainct.c</FilePath>
+            </File>
+            <File>
+              <FileName>jdapistd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\LibJPEG\source\jdapistd.c</FilePath>
+            </File>
+            <File>
+              <FileName>jddctmgr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\LibJPEG\source\jddctmgr.c</FilePath>
+            </File>
+            <File>
+              <FileName>jfdctint.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\LibJPEG\source\jfdctint.c</FilePath>
+            </File>
+            <File>
+              <FileName>jcmarker.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\LibJPEG\source\jcmarker.c</FilePath>
+            </File>
+            <File>
+              <FileName>jdhuff.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\LibJPEG\source\jdhuff.c</FilePath>
+            </File>
+            <File>
+              <FileName>jmemnobs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\LibJPEG\source\jmemnobs.c</FilePath>
             </File>
             <File>
               <FileName>jaricom.c</FileName>
@@ -997,9 +1027,29 @@
               <FilePath>..\..\LibJPEG\source\jaricom.c</FilePath>
             </File>
             <File>
-              <FileName>jddctmgr.c</FileName>
+              <FileName>jmemmgr.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\LibJPEG\source\jddctmgr.c</FilePath>
+              <FilePath>..\..\LibJPEG\source\jmemmgr.c</FilePath>
+            </File>
+            <File>
+              <FileName>jcmaster.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\LibJPEG\source\jcmaster.c</FilePath>
+            </File>
+            <File>
+              <FileName>jccolor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\LibJPEG\source\jccolor.c</FilePath>
+            </File>
+            <File>
+              <FileName>jcomapi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\LibJPEG\source\jcomapi.c</FilePath>
+            </File>
+            <File>
+              <FileName>jidctint.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\LibJPEG\source\jidctint.c</FilePath>
             </File>
             <File>
               <FileName>jquant1.c</FileName>
@@ -1032,44 +1082,9 @@
               <FilePath>..\..\LibJPEG\source\jcsample.c</FilePath>
             </File>
             <File>
-              <FileName>jcmaster.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\LibJPEG\source\jcmaster.c</FilePath>
-            </File>
-            <File>
-              <FileName>jmemmgr.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\LibJPEG\source\jmemmgr.c</FilePath>
-            </File>
-            <File>
-              <FileName>jcmainct.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\LibJPEG\source\jcmainct.c</FilePath>
-            </File>
-            <File>
-              <FileName>jdapistd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\LibJPEG\source\jdapistd.c</FilePath>
-            </File>
-            <File>
-              <FileName>jdhuff.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\LibJPEG\source\jdhuff.c</FilePath>
-            </File>
-            <File>
               <FileName>jdcolor.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\LibJPEG\source\jdcolor.c</FilePath>
-            </File>
-            <File>
-              <FileName>jidctint.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\LibJPEG\source\jidctint.c</FilePath>
-            </File>
-            <File>
-              <FileName>jcomapi.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\LibJPEG\source\jcomapi.c</FilePath>
             </File>
             <File>
               <FileName>jchuff.c</FileName>
@@ -1107,11 +1122,6 @@
               <FilePath>..\..\LibJPEG\source\jccoefct.c</FilePath>
             </File>
             <File>
-              <FileName>jfdctint.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\LibJPEG\source\jfdctint.c</FilePath>
-            </File>
-            <File>
               <FileName>jdatadst.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\LibJPEG\source\jdatadst.c</FilePath>
@@ -1132,6 +1142,11 @@
               <FilePath>..\..\LibJPEG\source\jidctfst.c</FilePath>
             </File>
             <File>
+              <FileName>jfdctfst.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\LibJPEG\source\jfdctfst.c</FilePath>
+            </File>
+            <File>
               <FileName>jdarith.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\LibJPEG\source\jdarith.c</FilePath>
@@ -1140,11 +1155,6 @@
               <FileName>jerror.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\LibJPEG\source\jerror.c</FilePath>
-            </File>
-            <File>
-              <FileName>jfdctfst.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\LibJPEG\source\jfdctfst.c</FilePath>
             </File>
             <File>
               <FileName>jdtrans.c</FileName>
@@ -1170,11 +1180,6 @@
               <FileName>jdsample.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\LibJPEG\source\jdsample.c</FilePath>
-            </File>
-            <File>
-              <FileName>jmemnobs.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\LibJPEG\source\jmemnobs.c</FilePath>
             </File>
             <File>
               <FileName>jdmainct.c</FileName>
@@ -1205,11 +1210,6 @@
               <FileName>jquant2.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\LibJPEG\source\jquant2.c</FilePath>
-            </File>
-            <File>
-              <FileName>jcmarker.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\LibJPEG\source\jcmarker.c</FilePath>
             </File>
             <File>
               <FileName>jdmaster.c</FileName>

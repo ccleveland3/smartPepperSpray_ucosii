@@ -28,5 +28,8 @@
 int32_t Capture_Image_TO_Bmp  (void);
 void    init_picture_count    (void);
 
+#define BMP_16BIT
+//#define BMP_24BIT
+
 #endif /* #define __BMP_H */
 /******************* COPYRIGHT 2012 Embest Tech. Co., Ltd. *****END OF FILE****/
