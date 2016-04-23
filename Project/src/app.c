@@ -43,6 +43,7 @@ SD_Error Status = SD_OK;
 FATFS filesystem;		/* volume lable */
 FRESULT ret;			/* Result code */
 FIL file;			/* File object */
+FIL MyFile, MyFile1;
 DIR dir;			/* Directory object */
 FILINFO fno;			/* File information object */
 UINT bw, br;
@@ -50,6 +51,10 @@ uint8_t buff[128];
 uint8_t touched = 0;
 uint8_t KeyPressFlg = 0;
 uint8_t capture_Flag = ENABLE;
+uint8_t   _aucLine[1028];
+RGB_typedef *RGB_matrix;
+uint32_t line_counter = 0;
+
 
 
 //static TS_STATE ts_State;
@@ -60,7 +65,6 @@ static  void  App_EventCreate      (void);
 static  void  App_TaskStart        (void    *p_arg);
 static  void  App_TaskKbd          (void    *p_arg);
 static  void  App_TouchTask        (void *p_arg);
-static  void  fault_err            (FRESULT rc);
 static void LCD_Display(void);
 static void KeyPad(void);
 static void Touch(void);
@@ -68,7 +72,9 @@ uint8_t DCMI_OV9655Config(void);
 void EXTILine0_Config(void);
 void DCMI_Config(void);
 void I2C1_Config(void);
-void Camera(void);
+static void Camera(void);
+static uint8_t Jpeg_CallbackFunction(uint8_t* Row, uint32_t DataLength);
+
 /* Private functions ---------------------------------------------------------*/
 /**
 * @brief  Main program.
@@ -104,6 +110,41 @@ int  main (void)
   return (0);
 }
 
+void jpeg_test()
+{
+	if (f_mount(0, &filesystem) == FR_OK)
+	{
+    //printf("could not open filesystem \n\r");
+	  if(f_open(&MyFile1, "image.jpg", FA_CREATE_ALWAYS | FA_WRITE) == FR_OK)
+    {
+      /*##-5- Open the BMP image with read access ##########################*/
+      if(f_open(&MyFile, "image.bmp", FA_READ) == FR_OK)
+      {         
+        /*##-6- Jpeg encoding ##############################################*/
+        jpeg_encode(&MyFile, &MyFile1, IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_QUALITY, _aucLine);
+				//jpeg_decode(&MyFile1, IMAGE_WIDTH, _aucLine, Jpeg_CallbackFunction);
+				//jpeg_decode(&MyFile1, IMAGE_WIDTH, _aucLine, Jpeg_CallbackFunction);
+                   
+        /* Close the BMP and JPEG files */
+        f_close(&MyFile1);
+        f_close(&MyFile);
+          
+        /*##-7- Jpeg decoding ##############################################*/
+        /* Open the JPEG file for read */
+        if(f_open(&MyFile1, "image.jpg", FA_READ) == FR_OK)
+        {          
+          /* Jpeg Decoding for display to LCD */
+          jpeg_decode(&MyFile1, IMAGE_WIDTH, _aucLine, Jpeg_CallbackFunction);
+            
+          /* Close the JPEG file */
+          f_close(&MyFile1);   
+        }
+      }
+    }
+		f_mount(0, NULL);
+  }
+}
+
 /**
 * @brief  The startup task.  The uC/OS-II ticker should only be initialize
 *         once multitasking starts.
@@ -123,6 +164,7 @@ static  void  App_TaskStart (void *p_arg)
   itInit();
     EXTILine0_Config();
  DCMI_Control_IO_Init();
+	LCD_Display();
   //sineWave_init();
 
 #if (OS_TASK_STAT_EN > 0)
@@ -135,9 +177,10 @@ static  void  App_TaskStart (void *p_arg)
   App_TaskCreate();
 
   /* mount the filesystem */
-  if (f_mount(0, &filesystem) != FR_OK) {
+//  if (f_mount(0, &filesystem) != FR_OK) {
     //printf("could not open filesystem \n\r");
-  }
+//  }
+	
   OSTimeDlyHMSM(0, 0, 0, 10);
 //  WaveRecorderUpdate();
 //
@@ -162,18 +205,25 @@ static  void  App_TouchTask (void *p_arg)
 {  
   (void)p_arg;
   
-  LCD_Display();
-  LCD_DisplayStringLine(4, "Modem Init");
+  
+  LCD_DisplayStringLine(4, (uint8_t *)"Modem Init");
   if(!modemInit())
 	{
-		LCD_DisplayStringLine(4, "Modem Init Failed!");
+		LCD_DisplayStringLine(4, (uint8_t *)"Modem Init Failed!");
 		while(1);
 	}
+	
   Camera();
-	pictureSend();
-  //smsSend();
+	//smsSend();
+	
+	LCD_DisplayStringLine(4, (uint8_t *)"Start");
+	jpeg_test();
+	pictureSend("image.jpg", _aucLine, _aucLine+516);
+	LCD_DisplayStringLine(4, (uint8_t *)"Done!");
+	
+  
   OSTimeDlyHMSM(0, 0, 2, 0);
-  KeyPad();
+  //KeyPad();
   
   //LCD_DisplayStringLine(0,"Sucess");
   
@@ -666,6 +716,36 @@ static  void  App_TaskKbd (void *p_arg)
     }
     OSTimeDlyHMSM(0, 0, 0, 20);
   }
+}
+
+/**
+  * @brief  Copy decompressed data to display buffer.
+  * @param  Row: Output row buffer
+  * @param  DataLength: Row width in output buffer
+  * @retval None
+  */
+static uint8_t Jpeg_CallbackFunction(uint8_t* Row, uint32_t DataLength)
+{
+	uint32_t i = 0;
+  RGB_matrix =  (RGB_typedef*)Row;
+  uint16_t  RGB16Buffer[IMAGE_WIDTH];
+  
+  for(i = 0; i < IMAGE_WIDTH; i++)
+  {
+    RGB16Buffer[i]  = (uint16_t)
+      (
+       ((RGB_matrix[i].B & 0x00F8) >> 3)|
+       ((RGB_matrix[i].G & 0x00FC) << 3)|
+       ((RGB_matrix[i].R & 0x00F8) << 8)
+             );
+    LCD_SetTextColor(RGB16Buffer[i]);
+		//LCD_DrawLine(i, IMAGE_HEIGHT - line_counter - 1, 1, LCD_DIR_HORIZONTAL);
+		LCD_DrawLine(i, line_counter, 1, LCD_DIR_HORIZONTAL);
+
+  }
+  
+  line_counter++;
+  return 0;
 }
 
 #if (OS_APP_HOOKS_EN > 0)

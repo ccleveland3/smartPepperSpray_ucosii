@@ -17,6 +17,9 @@
   * CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
   ******************************************************************************
   */
+	
+#include <stdint.h>
+	
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef  __APP_CFG_H__
 #define  __APP_CFG_H__
@@ -35,6 +38,20 @@
 #define  uC_CFG_OPTIMIZE_ASM_EN                 DEF_ENABLED
 #define  LIB_STR_CFG_FP_EN                      DEF_DISABLED
 
+typedef struct RGB
+{
+  uint8_t B;
+  uint8_t G;
+  uint8_t R;
+}RGB_typedef;
+
+#define IMAGE_HEIGHT 240
+#define IMAGE_WIDTH  320
+#define IMAGE_QUALITY 90
+#define LCD_FRAME_BUFFER 0xC0000000
+
+/* #define USE_DMA2D */
+#define SWAP_RB
 
 #endif
 

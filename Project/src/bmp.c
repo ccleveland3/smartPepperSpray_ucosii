@@ -21,8 +21,6 @@
 #include "main.h"
 
 /* Private macro -------------------------------------------------------------*/
-#define BMP_16BIT
-//#define BMP_24BIT
 /* Private variables ---------------------------------------------------------*/
 
 FATFS filesys;        /* volume lable */
@@ -95,9 +93,10 @@ int32_t Capture_Image_TO_Bmp(void)
   }
   OSTimeDlyHMSM(0, 0, 0, 10);
 
-  sprintf(file_str, "pic%d.bmp",pic_counter);
+  //sprintf(file_str, "pic%d.bmp",pic_counter);
 
-  ret = f_open(&file, file_str, FA_WRITE | FA_CREATE_ALWAYS);
+  //ret = f_open(&file, file_str, FA_WRITE | FA_CREATE_ALWAYS);
+	ret = f_open(&file, "image.bmp", FA_WRITE | FA_CREATE_ALWAYS);
   if (ret) {
     return ret;
   }
