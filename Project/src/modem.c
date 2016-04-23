@@ -8,6 +8,8 @@
 #define RX_BUFFER_SIZE 255
 #define RX_CIRC_INC(x) ((x + 1) % RX_BUFFER_SIZE)
 
+#define OUT_FILE_NAME "base64.txt"
+
 static const char rx_error[] = "ERROR\r";
 
 static volatile char rx_buffer[RX_BUFFER_SIZE] = {0};
@@ -17,19 +19,21 @@ static volatile int rx_out = 0;
 char rx_line[RX_BUFFER_SIZE] = {0};
 char rx_response[RX_BUFFER_SIZE] = {0};
 
-static void modemSend(const char *str);
+static void modemSend(const char *str, uint8_t literalPlus);
 static int waitResponse(const char *target, int numChar);
 static int modemGetNextLine(void);
 static int parseGPSData(void);
 static int getResponse(const char *start, const char *end);
 void smsSend(void);
 void setupGPS(void);
-void pictureSend(void);
+void pictureSend(const char* imageFileName, uint8_t * inBuff, uint8_t * outBuff);
 
 struct Gps {
   char utc[10];       //"hhmmss.ss"
   char googleLatitude[12];  //"+dd.ddddddd"
   char googleLongitude[13]; //"-ddd.ddddddd"
+	char exositeLatitude[11]; //"+ddmm.mmmm"
+	char exositeLongitude[12]; //-dddmm.mmmm"
   char hdop[4];       //"x.x"
   char altidude[7];   //"xxxx.x"
   char fix[2];        //"x"
@@ -40,11 +44,22 @@ struct Gps {
   char nsat[3];       //"nn"
 };
 
-struct Gps lastGPS = {"hhmmss.ss", "+dd.ddddddd", "-ddd.ddddddd", "x.x", \
-  "xxxx.x", "x", "ddd.mm", "xxxx.x", "xxxx.x", "ddmmyy", "nn"};
+const char base64[64] = {\
+	'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',\
+	'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd',\
+	'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',\
+	't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7',\
+	'8', '9', '+', '/'};
+extern FATFS filesystem;
+FIL inFile, outFile;
+
+struct Gps lastGPS = {"hhmmss.ss", "+dd.ddddddd", "-ddd.ddddddd", "+ddmm.mmmm",\
+	"-dddmm.mmmm", "x.x", "xxxx.x",  "x", "ddd.mm", "xxxx.x", "xxxx.x", "ddmmyy",\
+  "nn"};
 
 //Must add latitude,longitude to the end and keep the total characters under 150
-const char textMessage[68] = "COME HELP PLEASE! https://www.google.com/maps/dir/Current+Location/";
+	const char googleTextMessage[56] = "HELP! https://www.google.com/maps/dir/Current+Location/";
+	const char exositeTestMessage[57] = " https://portals.exosite.com/views/1828597911/3170008474";
 
 int modemInit()
 {
@@ -136,24 +151,24 @@ int modemInit()
   GPIO_ResetBits(GPIOA, GPIO_Pin_8);
   
   /* Turn off echo */
-  modemSend("XATE0\r\n");
+  modemSend("XATE0\r\n", FALSE);
   if(!waitResponse("OK",2))
 	{
-		modemSend("ATE0\r\n");
+		modemSend("ATE0\r\n", FALSE);
 		if(!waitResponse("OK",2))
 		{
 			return 0;
 		}
 	}
-  //    modemSend("AT$GPSSLSR=2,3\r\n");
+  //    modemSend("AT$GPSSLSR=2,3\r\n", FALSE);
   // waitResponse("OK",2);
-  //  modemSend("AT$GPSP=1");
+  //  modemSend("AT$GPSP=1", FALSE);
   //  waitResponse("OK",2);
-  //  modemSend("AT$GPSNMUN=3,1,1,1,1,1,1\r\n");
+  //  modemSend("AT$GPSNMUN=3,1,1,1,1,1,1\r\n", FALSE);
   //  waitResponse("CONNECT",2);
-  //  modemSend("+++\r\n");
+  //  modemSend("+++\r\n", FALSE);
   //  waitResponse("OK",2);
-  //  modemSend("AT$GPSACP\r\n");
+  //  modemSend("AT$GPSACP\r\n", FALSE);
   //  waitResponse("OK",2);
   
   
@@ -172,17 +187,18 @@ void smsSend()
   parseGPSData();
   
   OSTimeDlyHMSM(0, 0, 0, 50);
-  modemSend("AT+CMGF=1\r\n");
+  modemSend("AT+CMGF=1\r\n", FALSE);
   waitResponse("OK",2);
   OSTimeDlyHMSM(0, 0, 0, 50);
-  modemSend("AT+CMGS=\"+15303219087\"\r\n");
+  modemSend("AT+CMGS=\"+15303219087\"\r\n", FALSE);
   OSTimeDlyHMSM(0, 0, 0, 50);
   
-  modemSend(textMessage);       //67
-  modemSend(lastGPS.googleLatitude);  //11
-  modemSend(",");               //1
-  modemSend(lastGPS.googleLongitude); //12
-  modemSend("  This is only a test of Smart Pepper Spray\x1A"); //43, total 134
+  modemSend(googleTextMessage, FALSE);       //55
+  modemSend(lastGPS.googleLatitude, FALSE);  //11
+  modemSend(",", FALSE);                     //1
+  modemSend(lastGPS.googleLongitude, FALSE); //12
+	modemSend(exositeTestMessage, FALSE);      //56
+  modemSend(" ONLY A TEST\x1A", FALSE); //12, total 147
   
   waitResponse("+CMGS:xx",2);
 }
@@ -190,12 +206,12 @@ void smsSend()
 
 void setupGPS()
 {
-  modemSend("AT$GPSAT=1\r\n");
+  modemSend("AT$GPSAT=1\r\n", FALSE);
 	//Ok if modem responds with ERROR, this means GPS is already powering the GPS
 	//antenna
   waitResponse("OK",2);
 	
-  modemSend("AT$GPSP=1\r\n");
+  modemSend("AT$GPSP=1\r\n", FALSE);
 	//Ok if modem responds with ERROR, this means GPS is already powered
   waitResponse("OK",2);
   
@@ -215,7 +231,7 @@ static int parseGPSData()
 	double minutes;
   double degrees;
   
-  modemSend("AT$GPSACP\r\n");
+  modemSend("AT$GPSACP\r\n", FALSE);
   
   if(getResponse("$GPSACP:", "OK\r"))
   {  
@@ -232,11 +248,17 @@ static int parseGPSData()
       //dddmm.mmmmD where ddd is degrees from 000 to 180, mm.mmmm is minutes
       //from 00.0000 to 59.9999, and D is either E for east or W for west.
       
-      curGps.googleLatitude[0]  = (rawLatitude[9]   == 'N') ? '+' : '-';
-      curGps.googleLongitude[0] = (rawLongitude[10] == 'E') ? '+' : '-';
+      curGps.googleLatitude[0]   = (rawLatitude[9]   == 'N') ? '+' : '-';
+      curGps.googleLongitude[0]  = (rawLongitude[10] == 'E') ? '+' : '-';
       
+			curGps.exositeLatitude[0]  = (rawLatitude[9]   == 'N') ? '+' : '-';
+      curGps.exositeLongitude[0] = (rawLongitude[10] == 'E') ? '+' : '-';
+			
       rawLatitude[9]   = (char)NULL;
       rawLongitude[10] = (char)NULL;
+			
+			strcpy(curGps.exositeLatitude  + 1, rawLatitude);
+			strcpy(curGps.exositeLongitude + 1, rawLongitude);
       
       minutes = atof(rawLatitude + 2);
       degrees = minutes / 60;
@@ -267,43 +289,313 @@ static int parseGPSData()
   return 0;
 }
 
-void pictureSend()
+// inBuff  needs to be 514 bytes
+// outBuff needs to be 512 bytes
+void pictureSend(const char* imageFileName, uint8_t * inBuff, uint8_t * outBuff)
 {
-	modemSend("AT#SGACT=3,1\r\n");
-	//Okay if it returns error, the PDP context may already be active.
-	waitResponse("OK", 2);
+	int contentLength = 0;
 	
-	modemSend("AT#SD=3,0,80,\"m2.exosite.com\"\r\n");
-	if(!waitResponse("CONNECT", 7))
-		return;
+	// Number of bytes read from the JPEG file during the last f_read call
+	uint32_t bytesRead      = 0;
 	
-	modemSend("POST /onep:v1/stack/alias HTTP/1.1\x0A");
-	modemSend("Host: m2.exosite.com\x0A");
-	modemSend("X-Exosite-CIK: 312330d15297814c0855f25f6d6bda93d10b450f\x0A");
-	modemSend("Content-Type: application/x-www-form-urlencoded; charset=utf-8\x0A");
-	modemSend("Accept: application/x-www-form-urlencoded\x0A");
-	modemSend("Content-Length: 27\x0A\x0A");
-	modemSend("GPSdata=1010.1010_2020.2020");
+	// Number of bytes left from the JEPG file that need to be encoded
+	uint32_t jpegBytesLeft  = 0;
 	
-	//OSTimeDlyHMSM(0, 0, 1, 0);
-	waitResponse("Content-Length: 0", 17);
-	//modemSend("+++\n");
-	waitResponse("NO CARRIER", 10);
+	// Number of bytes written to the base64 file during the last f_write call
+	uint32_t bytesWritten   = 0;
 	
-	modemSend("AT#SH=3\r\n");
-	waitResponse("OK", 2);
+	// Number of bytes that have not been written to the base64 file yet
+	uint32_t bytesUnwritten = 0;
+
+	// Used to hold 3 bytes at a time from the JPEG file that need to be base64
+	// encoded
+	uint32_t temp           = 0;
+	int inBuffIndex         = 0;
+	int totalWritten        = 0;
+	int base64FileSize      = 0;
+	uint8_t endOfFile       = FALSE;
+	uint8_t dataToProcess   = FALSE;
+	uint8_t unEncodedByte1  = 0;
+	uint8_t unEncodedByte2  = 0;
+	uint8_t numUnEncoded    = 0;
+	
+	if(f_mount(0, &filesystem) == FR_OK)
+	{
+	  if(f_open(&outFile, OUT_FILE_NAME, FA_CREATE_ALWAYS | FA_WRITE) == FR_OK)
+    {
+      // Open the JPEG image with read access
+      if(f_open(&inFile, imageFileName, FA_READ) == FR_OK)
+      {
+				
+				// Begin converting the image file to Base64 encoding
+				while(!endOfFile)
+				{
+					if(f_read(&inFile, inBuff, 512, (UINT*)&bytesRead) == FR_OK)
+					{
+						jpegBytesLeft += bytesRead;
+						inBuffIndex    = 0;
+						
+						// True even if we reach the end of the file since we need to check
+						// for any unencoded bytes.
+						dataToProcess  = TRUE;
+						
+						// Go to write the end sequence if we are done
+						while(dataToProcess)
+						{
+							// bytesRead is zero when we reach the end of the file.
+							if(bytesRead != 0)
+							{
+								
+								// Encode data until we don't have enough JPEG bytes to make
+								// the set of three that we need to make four bytes of base64
+								// data or run out of out buffer room and need to flush it.
+								while((jpegBytesLeft >= 3) && (bytesUnwritten < 512))
+								{
+									// First use up any left over unencoded JPEG bytes left over
+									// from last time we were here.
+									switch (numUnEncoded)
+									{
+										case 2:
+											temp = ((unEncodedByte1 << 16) | \
+									            (unEncodedByte2 << 8)  | \
+									            (inBuff[inBuffIndex]));
+											inBuffIndex += 1;
+											numUnEncoded = 0;
+											break;
+										case 1:
+											temp = ((unEncodedByte1      << 16) | \
+									            (inBuff[inBuffIndex] << 8)  | \
+									            (inBuff[inBuffIndex+1]));
+											inBuffIndex += 2;
+											numUnEncoded = 0;
+											break;
+										default:
+											// Most common case.  Either case 1 or 2 can only happen
+										  // at most once per f_read.
+											temp = ((inBuff[inBuffIndex]   << 16) | \
+									            (inBuff[inBuffIndex+1] << 8)  | \
+									            (inBuff[inBuffIndex+2]));
+											inBuffIndex    += 3;
+											break;
+									}
+									
+									// Convert 6 bits of JPEG data at a time to base64
+									outBuff[bytesUnwritten]   = base64[(temp >> 18) & 0x3F];
+									outBuff[bytesUnwritten+1] = base64[(temp >> 12) & 0x3F];
+									outBuff[bytesUnwritten+2] = base64[(temp >> 6)  & 0x3F];
+									outBuff[bytesUnwritten+3] = base64[ temp        & 0x3F];
+									
+									bytesUnwritten += 4;
+									jpegBytesLeft  -= 3;
+								}
+								
+								// Check to see if we ran out of data and if we need to keep
+								// track of any unencoded JPEG bytes.
+								if(jpegBytesLeft < 3)
+								{
+									dataToProcess = FALSE;
+									numUnEncoded  = jpegBytesLeft;
+									
+									// Need to read more data from the JPEG file, but there may
+									// be up to 2 bytes of unprocessed data left over.
+									switch (jpegBytesLeft)
+									{
+									case 2:
+									  unEncodedByte2 = inBuff[inBuffIndex+1];
+									case 1:
+									  unEncodedByte1 = inBuff[inBuffIndex];
+									default :
+										break;
+									}
+								}
+							}
+							else //No bytes read, this most likely means end of file.
+							{
+								endOfFile     = TRUE;
+								dataToProcess = FALSE;
+							
+								// Write end sequence according to the MIME standard using
+								// whatever unencoded JPEG bytes are left, if any at all.
+								switch(jpegBytesLeft)
+								{
+									case 0 :
+										// Nothing to do but flush the out buffer
+										break;
+									case 1 :
+										outBuff[bytesUnwritten]   = base64[unEncodedByte1 >> 2 & 0x3F];
+										outBuff[bytesUnwritten+1] = base64[unEncodedByte1 << 4 & 0x3F];
+										outBuff[bytesUnwritten+2] = '=';
+										outBuff[bytesUnwritten+3] = '=';
+								
+										bytesUnwritten += 4;
+										jpegBytesLeft  -= 1;
+										numUnEncoded   -= 1;
+										break;
+									case 2 :
+										temp = ((unEncodedByte1 << 8) | (unEncodedByte2));
+
+										outBuff[bytesUnwritten]   = base64[(temp >> 10) & 0x3F];
+										outBuff[bytesUnwritten+1] = base64[(temp >> 4)  & 0x3F];
+										outBuff[bytesUnwritten+2] = base64[(temp << 2)  & 0x3F];
+										outBuff[bytesUnwritten+3] = '=';
+									
+										bytesUnwritten += 4;
+										jpegBytesLeft  -= 2;
+										numUnEncoded   -= 2;
+										break;
+									default :
+										//Should never happen
+										while(1);
+								}
+							}
+							
+							// Write unwritten bytes to the base64 file in chunks of 512
+							// except if we reach the end of the JPEG file, then write
+							// whatever is left.
+							if(bytesUnwritten >= 512 || endOfFile)
+							{
+								for(totalWritten  = 0; bytesUnwritten != 0; \
+								  bytesUnwritten -= bytesWritten, \
+							    totalWritten   += bytesWritten)
+								{
+									if(f_write(&outFile, outBuff + totalWritten, bytesUnwritten, \
+										(UINT*)&bytesWritten) != FR_OK)
+									{
+										// Something terrible happened
+										f_close(&inFile);
+										f_close(&outFile);
+										f_mount(0, NULL);
+										
+										return;
+									}
+								}
+								
+								// Keeping track of the base64FileSize for calculating the
+								// content length in the HTTP POST command.
+								base64FileSize += totalWritten;
+							}
+							
+							// Remove after thorough testing
+							if(endOfFile)
+							{
+								// Shouldn't happen I think.
+								if(jpegBytesLeft  != 0) {while(1);}
+								if(bytesUnwritten != 0) {while(1);}
+								if(numUnEncoded   != 0) {while(1);}
+							}
+						}
+					}
+					else // f_read of JPEG file error
+					{
+						f_close(&inFile);
+            f_close(&outFile);
+						f_mount(0, NULL);
+						return;
+					}
+				}
+				
+			  // Close the JPEG and base64 files
+        f_close(&inFile);
+        f_close(&outFile);
+				
+        // Open the base64 file for read
+        if(f_open(&outFile, OUT_FILE_NAME, FA_READ) == FR_OK)
+        {
+					// Send the data
+					modemSend("AT#SGACT=3,1\r\n", FALSE);
+					//Okay if it returns error, the PDP context may already be active.
+					waitResponse("OK", 2);
+	
+					modemSend("AT#SD=3,0,80,\"m2.exosite.com\",0\r\n", FALSE);
+					if(!waitResponse("CONNECT", 7))
+						return;
+	
+					modemSend("POST /onep:v1/stack/alias HTTP/1.1\x0A", FALSE);
+					modemSend("Host: m2.exosite.com\x0A", FALSE);
+					modemSend("X-Exosite-CIK: 312330d15297814c0855f25f6d6bda93d10b450f\x0A", FALSE);
+					modemSend("Content-Type: application/x-www-form-urlencoded; charset=utf-8\x0A", FALSE);
+					modemSend("Accept: application/x-www-form-urlencoded\x0A", FALSE);
+					
+					contentLength = 8 /* "GPSdata=" */ \
+					              + strlen(lastGPS.exositeLatitude) \
+					              + 1 /* '_' */ \
+					              + strlen(lastGPS.exositeLongitude) \
+					              + 1 /* '&' */ \
+					              + 9 /* "TheImage=" */ \
+					              + base64FileSize;
+					sprintf((char *)outBuff, "Content-Length: %d\x0A\x0A", contentLength);
+					modemSend((char *)outBuff, FALSE);
+					
+					sprintf((char *)outBuff, "GPSdata=%s_%s", lastGPS.exositeLatitude, lastGPS.exositeLongitude);
+					modemSend((char *)outBuff, TRUE);
+					
+					modemSend("&TheImage=", FALSE);
+					
+					// Send the base64 file
+					while(1)
+					{
+						if(f_read(&outFile, outBuff, 256, (UINT*)&bytesRead) == FR_OK)
+						{
+							if(bytesRead != 0)
+							{
+								// Modem send requires null terminated character strings
+								outBuff[bytesRead] = (char)NULL;
+								modemSend((char *)outBuff, TRUE);
+							}
+							else
+							{
+								// End of file
+								break;
+							}
+						}
+						else
+						{
+							f_close(&outFile);
+							f_mount(0, NULL);
+							return;
+						}
+					}
+					
+					
+					OSTimeDlyHMSM(0, 0, 1, 0);
+					waitResponse("Content-Length: 0", 17);
+					//modemSend("+++\n", FALSE);
+					waitResponse("NO CARRIER", 10);
+	
+					modemSend("AT#SH=3\r\n", FALSE);
+					waitResponse("OK", 2);
+					
+          /* Close the base64 file */
+          f_close(&outFile);   
+        }
+      }
+    }
+		f_mount(0, NULL);
+	}
 }
-static void modemSend(const char *str)
+
+
+static void modemSend(const char *str, uint8_t literalPlus)
 {
 	int i;
   for(i = 0; str[i] != 0; i++)
   {
-    USART_SendData(USART1, (uint8_t) str[i]);
+		if(!literalPlus || str[i] != '+')
+		{
+			USART_SendData(USART1, (uint8_t) str[i]);
+		}
+		else
+		{
+			USART_SendData(USART1, (uint8_t) '\\');
+			while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET)
+			{}
+			USART_SendData(USART1, (uint8_t) str[i]);
+		}
     
     /* Loop until the end of transmission */
     while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET)
     {}
-    //LCD_DisplayStringLine(0,"Sucess");
+    //LCD_DisplayStringLine(0,"Success");
   }
 }
 

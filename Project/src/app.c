@@ -51,7 +51,7 @@ uint8_t buff[128];
 uint8_t touched = 0;
 uint8_t KeyPressFlg = 0;
 uint8_t capture_Flag = ENABLE;
-uint8_t   _aucLine[1024];
+uint8_t   _aucLine[1028];
 RGB_typedef *RGB_matrix;
 uint32_t line_counter = 0;
 
@@ -65,7 +65,6 @@ static  void  App_EventCreate      (void);
 static  void  App_TaskStart        (void    *p_arg);
 static  void  App_TaskKbd          (void    *p_arg);
 static  void  App_TouchTask        (void *p_arg);
-static  void  fault_err            (FRESULT rc);
 static void LCD_Display(void);
 static void KeyPad(void);
 static void Touch(void);
@@ -73,7 +72,7 @@ uint8_t DCMI_OV9655Config(void);
 void EXTILine0_Config(void);
 void DCMI_Config(void);
 void I2C1_Config(void);
-void Camera(void);
+static void Camera(void);
 static uint8_t Jpeg_CallbackFunction(uint8_t* Row, uint32_t DataLength);
 
 /* Private functions ---------------------------------------------------------*/
@@ -207,20 +206,22 @@ static  void  App_TouchTask (void *p_arg)
   (void)p_arg;
   
   
-  //LCD_DisplayStringLine(4, (uint8_t *)"Modem Init");
-  //if(!modemInit())
-	//{
-	//	LCD_DisplayStringLine(4, (uint8_t *)"Modem Init Failed!");
-	//	while(1);
-	//}
+  LCD_DisplayStringLine(4, (uint8_t *)"Modem Init");
+  if(!modemInit())
+	{
+		LCD_DisplayStringLine(4, (uint8_t *)"Modem Init Failed!");
+		while(1);
+	}
+	
   Camera();
+	//smsSend();
 	
 	LCD_DisplayStringLine(4, (uint8_t *)"Start");
 	jpeg_test();
+	pictureSend("image.jpg", _aucLine, _aucLine+516);
 	LCD_DisplayStringLine(4, (uint8_t *)"Done!");
 	
-	//pictureSend();
-  //smsSend();
+  
   OSTimeDlyHMSM(0, 0, 2, 0);
   //KeyPad();
   
