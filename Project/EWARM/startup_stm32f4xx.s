@@ -67,6 +67,7 @@
         EXTERN BSP_IntHandlerTIM6
         EXTERN BSP_IntHandlerUSART1
         EXTERN BSP_IntHandlerUSART2
+        EXTERN BSP_IntHandlerEXTI4
 
         PUBLIC  __vector_table
 
@@ -109,7 +110,7 @@ __vector_table
         DCD     EXTI1_IRQHandler                  ; EXTI Line1
         DCD     EXTI2_IRQHandler                  ; EXTI Line2
         DCD     EXTI3_IRQHandler                  ; EXTI Line3
-        DCD     EXTI4_IRQHandler                  ; EXTI Line4
+        DCD     BSP_IntHandlerEXTI4               ; EXTI4_IRQHandler EXTI Line4
         DCD     DMA1_Stream0_IRQHandler           ; DMA1 Stream 0
         DCD     DMA1_Stream1_IRQHandler           ; DMA1 Stream 1
         DCD     DMA1_Stream2_IRQHandler           ; DMA1 Stream 2
@@ -294,7 +295,7 @@ EXTI3_IRQHandler
         PUBWEAK EXTI4_IRQHandler
         SECTION .text:CODE:REORDER(1)
 EXTI4_IRQHandler
-        B EXTI4_IRQHandler
+        B BSP_IntHandlerEXTI4
 
         PUBWEAK DMA1_Stream0_IRQHandler
         SECTION .text:CODE:REORDER(1)

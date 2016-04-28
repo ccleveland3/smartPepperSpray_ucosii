@@ -1,11 +1,11 @@
 /**
   ******************************************************************************
   * <h2><center>&copy; COPYRIGHT 2012 Embest Tech. Co., Ltd.</center></h2>
-  * @file    bsp.c 
+  * @file    bsp.c
   * @author  CMP Team
   * @version V1.0.0
   * @date    28-December-2012
-  * @brief   board support package.                        
+  * @brief   board support package.
   ******************************************************************************
   * @attention
   *
@@ -82,12 +82,6 @@ static  void  BSP_PB_Init      (void);
 void  BSP_Init (void)
 {
   BSP_IntInit();
-
-  //STM_EVAL_LEDInit(LED4);
-  //STM_EVAL_LEDInit(LED5);
-  //STM_EVAL_LEDInit(LED6);
-  //STM_EVAL_LEDInit(LED3);
-
   BSP_PB_Init();
 }
 
@@ -149,7 +143,7 @@ CPU_BOOLEAN  BSP_PB_GetStatus (CPU_INT08U pb)
   */
 void  BSP_NAND_Init (void)
 {
-                 
+
 }
 
 /**
@@ -159,7 +153,7 @@ void  BSP_NAND_Init (void)
   */
 void  BSP_NOR_Init (void)
 {
-   
+
 }
 
 /******************** COPYRIGHT 2012 Embest Tech. Co., Ltd.*****END OF FILE****/

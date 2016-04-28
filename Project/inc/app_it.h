@@ -13,4 +13,5 @@ void itInit(void);
 void TouchIRQ(void);
 void Button_Handler(void);
 void DAC_TIM_IRQ(void);
+void LSM303_Acc_ISR(void);
 #endif

@@ -17,9 +17,9 @@
   * CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
   ******************************************************************************
   */
-	
+
 #include <stdint.h>
-	
+
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef  __APP_CFG_H__
 #define  __APP_CFG_H__
@@ -27,13 +27,13 @@
 /* Exported define -----------------------------------------------------------*/
 #define  APP_OS_PROBE_EN                         DEF_DISABLED
 
+#define  SD_MUTEX_PRIO                                     2
 #define  APP_TASK_START_PRIO                               3
-#define  APP_TASK_KBD_PRIO                                 4
-#define  APP_TASK_TOUCH_PRIO                               5
+#define  APP_TASK_MODEM_PRIO                               4
 #define  OS_TASK_TMR_PRIO                (OS_LOWEST_PRIO - 2)
 
 #define  APP_TASK_START_STK_SIZE                        1024
-#define  APP_TASK_KBD_STK_SIZE                          1024
+#define  APP_TASK_MODEM_STK_SIZE                        1024
 
 #define  uC_CFG_OPTIMIZE_ASM_EN                 DEF_ENABLED
 #define  LIB_STR_CFG_FP_EN                      DEF_DISABLED
@@ -49,6 +49,11 @@ typedef struct RGB
 #define IMAGE_WIDTH  320
 #define IMAGE_QUALITY 90
 #define LCD_FRAME_BUFFER 0xC0000000
+
+#define EMER_BUTTON 0x01
+#define EMER_IMPACT 0x02
+#define APP_TIMEOUT 0x04
+
 
 /* #define USE_DMA2D */
 #define SWAP_RB

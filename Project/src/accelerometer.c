@@ -10,11 +10,49 @@
 #define LSM_Acc_Sensitivity_8g     (float)     0.25f           /*!< accelerometer sensitivity with 8 g full scale [LSB/mg] */
 #define LSM_Acc_Sensitivity_16g    (float)     0.0834f         /*!< accelerometer sensitivity with 12 g full scale [LSB/mg] */
 
+//void compAccTest()
+//{
+//  float pfData[3] = {0};
+//
+//  while(1)
+//  {
+//    if(KeyPressFlg)
+//    {
+//      KeyPressFlg = 0;
+//      LSM303DLHC_CompassReadAcc(pfData);
+//      sprintf((char *)buff, "Accel.");
+//      LCD_DisplayStringOffset(LCD_LINE_0, 0, buff);
+//      sprintf((char *)buff, "(x=%f)", pfData[0]);
+//      LCD_DisplayStringOffset(LCD_LINE_1, 0, buff);
+//      sprintf((char *)buff, "(y=%f)", pfData[1]);
+//      LCD_DisplayStringOffset(LCD_LINE_2, 0, buff);
+//      sprintf((char *)buff, "(z=%f)", pfData[2]);
+//      LCD_DisplayStringOffset(LCD_LINE_3, 0, buff);
+//      //LSM303DLHC_INT1_SOURCE_A LSM303DLHC_INT1_CFG_A
+//      LSM303DLHC_Read(ACC_I2C_ADDRESS, LSM303DLHC_INT1_SOURCE_A, 1, &perr);
+//      sprintf((char *)buff, "(%X)", perr);
+//      LCD_DisplayStringOffset(LCD_LINE_4, 0, buff);
+//
+//      LSM303DLHC_CompassReadMag(pfData);
+//      sprintf((char *)buff, "Comp.");
+//      LCD_DisplayStringOffset(LCD_LINE_5, 0, buff);
+//      sprintf((char *)buff, "(x=%f)", pfData[0]);
+//      LCD_DisplayStringOffset(LCD_LINE_6, 0, buff);
+//      sprintf((char *)buff, "(y=%f)", pfData[1]);
+//      LCD_DisplayStringOffset(LCD_LINE_7, 0, buff);
+//      sprintf((char *)buff, "(z=%f)", pfData[2]);
+//      LCD_DisplayStringOffset(LCD_LINE_8, 0, buff);
+//      //OSTimeDlyHMSM(0, 0, 0, 250);
+//    }
+//  }
+//}
+
 void accelerometerCompassInit()
 {
   LSM303DLHCMag_InitTypeDef LSM303DLHC_InitStructure;
   LSM303DLHCAcc_InitTypeDef LSM303DLHCAcc_InitStructure;
   LSM303DLHCAcc_FilterConfigTypeDef LSM303DLHCFilter_InitStructure;
+  uint8_t threshold;
 
   /* Configure MEMS magnetometer main parameters: temp, working mode, full Scale and Data rate */
   LSM303DLHC_InitStructure.Temperature_Sensor = LSM303DLHC_TEMPSENSOR_DISABLE;
@@ -42,6 +80,16 @@ void accelerometerCompassInit()
 
   /* Configure the accelerometer LPF main parameters */
   LSM303DLHC_AccFilterConfig(&LSM303DLHCFilter_InitStructure);
+
+  LSM303DLHC_AccIT1Config(LSM303DLHC_IT1_AOI1, ENABLE);
+
+  threshold = 126;
+  LSM303DLHC_Write(ACC_I2C_ADDRESS,  LSM303DLHC_INT1_THS_A, 1, &threshold);
+
+  LSM303DLHC_AccINT1InterruptConfig(LSM303DLHC_OR_COMBINATION,
+                                    (LSM303DLHC_X_HIGH |
+                                     LSM303DLHC_Y_HIGH |
+                                     LSM303DLHC_Z_HIGH), ENABLE);
 }
 
 /**

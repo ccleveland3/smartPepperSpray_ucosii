@@ -4,7 +4,7 @@
   * @author  MCD Application Team
   * @version V1.0.0
   * @date    18-April-2011
-  * @brief   This file includes the driver for OV9655 Camera module mounted on 
+  * @brief   This file includes the driver for OV9655 Camera module mounted on
   *          STM322xG-EVAL board RevA and RevB.
   ******************************************************************************
   * @attention
@@ -18,18 +18,18 @@
   *
   * <h2><center>&copy; Portions COPYRIGHT 2011 STMicroelectronics</center></h2>
   ******************************************************************************
-  */ 
+  */
 /**
   ******************************************************************************
   * <h2><center>&copy; Portions COPYRIGHT 2012 Embest Tech. Co., Ltd.</center></h2>
-  * @file    dcmi_ov9655.c 
+  * @file    dcmi_ov9655.c
   * @author  CMP Team
   * @version V1.0.0
   * @date    28-December-2012
-  * @brief   This file includes the driver for OV9655 Camera module mounted on 
-  *          STM322xG-EVAL board RevA and RevB.                          
+  * @brief   This file includes the driver for OV9655 Camera module mounted on
+  *          STM322xG-EVAL board RevA and RevB.
   *          Modified to support the STM32F4DISCOVERY, STM32F4DIS-BB, STM32F4DIS-CAM
-  *          and STM32F4DIS-LCD modules. 
+  *          and STM32F4DIS-LCD modules.
   ******************************************************************************
   * @attention
   *
@@ -55,7 +55,7 @@
 /* Private define ------------------------------------------------------------*/
 #define  TIMEOUT  20
 
-#define  CAMERA_RST_PIN			  GPIO_Pin_12	
+#define  CAMERA_RST_PIN			  GPIO_Pin_12
 #define  CAMERA_RST_PORT		  GPIOD
 
 #define  CAMERA_PWR_EN_PIN		GPIO_Pin_6
@@ -72,11 +72,11 @@
   Function:       DCMI_Control_IO_Init
   Description:    Init DCMI module power control
   Calls:          void
-  Called By:      
+  Called By:
   Input:          void
   Output:         void
-  Return:         
-  Others:         
+  Return:
+  Others:
 ******************************************************************************
 */
 void DCMI_Control_IO_Init(void)
@@ -87,7 +87,7 @@ void DCMI_Control_IO_Init(void)
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
 
   /* camera RST pin configuration */
-  GPIO_InitStructure.GPIO_Pin = CAMERA_RST_PIN; 
+  GPIO_InitStructure.GPIO_Pin = CAMERA_RST_PIN;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
@@ -99,7 +99,7 @@ OSTimeDlyHMSM(0, 0, 0, 10);
   GPIO_SetBits(CAMERA_RST_PORT, CAMERA_RST_PIN);
 
   /* camera PWR EN pin configuration */
-  GPIO_InitStructure.GPIO_Pin = CAMERA_PWR_EN_PIN; 
+  GPIO_InitStructure.GPIO_Pin = CAMERA_PWR_EN_PIN;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
@@ -109,7 +109,7 @@ OSTimeDlyHMSM(0, 0, 0, 10);
   GPIO_ResetBits(CAMERA_PWR_EN_PROT, CAMERA_PWR_EN_PIN);
 }
 
- 
+
 /**
   * @brief  Reset the OV9655 SCCB registers.
   * @param  None
@@ -117,7 +117,7 @@ OSTimeDlyHMSM(0, 0, 0, 10);
   */
 void DCMI_OV9655_Reset(void)
 {
-  DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS, OV9655_COM7, SCCB_REG_RESET);    
+  DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS, OV9655_COM7, SCCB_REG_RESET);
 }
 
 /**
@@ -126,7 +126,7 @@ void DCMI_OV9655_Reset(void)
   * @retval None
   */
 void DCMI_OV9655_QVGASizeSetup(void)
-{  
+{
   OSTimeDlyHMSM(0, 0, 0, TIMEOUT);
   DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS,0x00, 0x00);
   OSTimeDlyHMSM(0, 0, 0, TIMEOUT);
@@ -204,7 +204,7 @@ void DCMI_OV9655_QVGASizeSetup(void)
     OSTimeDlyHMSM(0, 0, 0, TIMEOUT);
   DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS,0x3d, 0x99);
     OSTimeDlyHMSM(0, 0, 0, TIMEOUT);
-  DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS,0x3e, 0x02); 
+  DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS,0x3e, 0x02);
     OSTimeDlyHMSM(0, 0, 0, TIMEOUT);
   DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS,0x3f, 0xc1);
     OSTimeDlyHMSM(0, 0, 0, TIMEOUT);
@@ -294,15 +294,15 @@ void DCMI_OV9655_QVGASizeSetup(void)
     OSTimeDlyHMSM(0, 0, 0, TIMEOUT);
   DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS,0x71, 0x78);
     OSTimeDlyHMSM(0, 0, 0, TIMEOUT);
-    OSTimeDlyHMSM(0, 0, 0, TIMEOUT);  
-  DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS,0x72, 0x11); 
+    OSTimeDlyHMSM(0, 0, 0, TIMEOUT);
+  DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS,0x72, 0x11);
     OSTimeDlyHMSM(0, 0, 0, TIMEOUT);
     OSTimeDlyHMSM(0, 0, 0, TIMEOUT);
   DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS,0x73, 0x01);
     OSTimeDlyHMSM(0, 0, 0, TIMEOUT);
-  DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS,0x74, 0x10); 
+  DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS,0x74, 0x10);
     OSTimeDlyHMSM(0, 0, 0, TIMEOUT);
-  DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS,0x75, 0x10); 
+  DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS,0x75, 0x10);
     OSTimeDlyHMSM(0, 0, 0, TIMEOUT);
   DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS,0x76, 0x01);
     OSTimeDlyHMSM(0, 0, 0, TIMEOUT);
@@ -512,7 +512,7 @@ void DCMI_OV9655_QQVGASizeSetup(void)
     OSTimeDlyHMSM(0, 0, 0, TIMEOUT);
   DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS,0x3d, 0x99);
     OSTimeDlyHMSM(0, 0, 0, TIMEOUT);
-  DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS,0x3e, 0x0e); 
+  DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS,0x3e, 0x0e);
     OSTimeDlyHMSM(0, 0, 0, TIMEOUT);
   DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS,0x3f, 0xc1);
     OSTimeDlyHMSM(0, 0, 0, TIMEOUT);
@@ -602,13 +602,13 @@ void DCMI_OV9655_QQVGASizeSetup(void)
     OSTimeDlyHMSM(0, 0, 0, TIMEOUT);
   DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS,0x71, 0x78);
     OSTimeDlyHMSM(0, 0, 0, TIMEOUT);
-  DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS,0x72, 0x22); 
+  DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS,0x72, 0x22);
     OSTimeDlyHMSM(0, 0, 0, TIMEOUT);
   DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS,0x73, 0x02);
     OSTimeDlyHMSM(0, 0, 0, TIMEOUT);
   DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS,0x74, 0x10);
     OSTimeDlyHMSM(0, 0, 0, TIMEOUT);
-  DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS,0x75, 0x10); 
+  DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS,0x75, 0x10);
     OSTimeDlyHMSM(0, 0, 0, TIMEOUT);
   DCMI_SingleRandomWrite(OV9655_DEVICE_WRITE_ADDRESS,0x76, 0x01);
     OSTimeDlyHMSM(0, 0, 0, TIMEOUT);
@@ -736,7 +736,7 @@ void DCMI_OV9655_QQVGASizeSetup(void)
 
 /**
   * @brief  Read the OV9655 Manufacturer identifier.
-  * @param  OV9655ID: pointer to the OV9655 Manufacturer identifier. 
+  * @param  OV9655ID: pointer to the OV9655 Manufacturer identifier.
   * @retval None
   */
 void DCMI_OV9655_ReadID(OV9655_IDTypeDef* OV9655ID)
@@ -749,7 +749,7 @@ void DCMI_OV9655_ReadID(OV9655_IDTypeDef* OV9655ID)
 
 /**
   * @brief  Set the Internal Clock Prescaler.
-  * @param  OV9655_Prescaler: the new value of the prescaler. 
+  * @param  OV9655_Prescaler: the new value of the prescaler.
   *         This parameter can be a value between 0x0 and 0x1F
   * @retval None
   */
@@ -760,12 +760,12 @@ void DCMI_OV9655_SetPrescaler(uint8_t OV9655_Prescaler)
 
 /**
   * @brief  Select the Output Format.
-  * @param  OV9655_OuputFormat: the Format of the ouput Data.  
+  * @param  OV9655_OuputFormat: the Format of the ouput Data.
   *         This parameter can be one of the following values:
-  *           @arg OUTPUT_FORMAT_RAWRGB_DATA 
-  *           @arg OUTPUT_FORMAT_RAWRGB_INTERP    
-  *           @arg OUTPUT_FORMAT_YUV              
-  *           @arg OUTPUT_FORMAT_RGB    
+  *           @arg OUTPUT_FORMAT_RAWRGB_DATA
+  *           @arg OUTPUT_FORMAT_RAWRGB_INTERP
+  *           @arg OUTPUT_FORMAT_YUV
+  *           @arg OUTPUT_FORMAT_RGB
   * @retval None
   */
 void DCMI_OV9655_SelectOutputFormat(uint8_t OV9655_OuputFormat)
@@ -775,11 +775,11 @@ void DCMI_OV9655_SelectOutputFormat(uint8_t OV9655_OuputFormat)
 
 /**
   * @brief  Select the Output Format Resolution.
-  * @param  OV9655_FormatResolution: the Resolution of the ouput Data. 
+  * @param  OV9655_FormatResolution: the Resolution of the ouput Data.
   *         This parameter can be one of the following values:
-  *           @arg FORMAT_CTRL_15fpsVGA 
-  *           @arg FORMAT_CTRL_30fpsVGA_NoVArioPixel    
-  *           @arg FORMAT_CTRL_30fpsVGA_VArioPixel     
+  *           @arg FORMAT_CTRL_15fpsVGA
+  *           @arg FORMAT_CTRL_30fpsVGA_NoVArioPixel
+  *           @arg FORMAT_CTRL_30fpsVGA_VArioPixel
   * @retval None
   */
 void DCMI_OV9655_SelectFormatResolution(uint8_t OV9655_FormatResolution)
@@ -789,8 +789,8 @@ void DCMI_OV9655_SelectFormatResolution(uint8_t OV9655_FormatResolution)
 
 /**
   * @brief  Set the new value of OV9655 registers
-  * @param  OV9655_Register: the OV9655 Register to be configured. 
-  * @param  Register_Val: The new value to be set 
+  * @param  OV9655_Register: the OV9655 Register to be configured.
+  * @param  Register_Val: The new value to be set
   * @retval None
   */
 void DCMI_OV9655_SetRegister(uint8_t OV9655_Register, uint8_t Register_Val)
@@ -802,9 +802,9 @@ void DCMI_OV9655_SetRegister(uint8_t OV9655_Register, uint8_t Register_Val)
   * @brief  Select the HREF Control signal option
   * @param  OV9665_HREFControl: the HREF Control signal option.
   *         This parameter can be one of the following value:
-  *           @arg OV9665_HREFControl_Opt1: HREF edge offset to data output. 
-  *           @arg OV9665_HREFControl_Opt2: HREF end 3 LSB    
-  *           @arg OV9665_HREFControl_Opt3: HREF start 3 LSB      
+  *           @arg OV9665_HREFControl_Opt1: HREF edge offset to data output.
+  *           @arg OV9665_HREFControl_Opt2: HREF end 3 LSB
+  *           @arg OV9665_HREFControl_Opt3: HREF start 3 LSB
   * @retval None
   */
 void DCMI_OV9655_HREFControl(uint8_t OV9665_HREFControl)
@@ -817,8 +817,8 @@ void DCMI_OV9655_HREFControl(uint8_t OV9665_HREFControl)
   * @param  OV9665_RGBOption: the RGB Format option.
   *         This parameter can be one of the following value:
   *           @arg RGB_NORMAL
-  *           @arg RGB_565  
-  *           @arg RGB_555    
+  *           @arg RGB_565
+  *           @arg RGB_555
   * @retval None
   */
 void DCMI_OV9655_SelectRGBOption(uint8_t OV9665_RGBOption)
@@ -829,15 +829,15 @@ void DCMI_OV9655_SelectRGBOption(uint8_t OV9665_RGBOption)
 /**
   * @brief  Writes a byte at a specific Camera register
   * @param  Device: OV9655 write address.
-  * @param  Addr: OV9655 register address. 
-  * @param  Data: data to be written to the specific register 
-  * @retval 0x00 if write operation is OK. 
+  * @param  Addr: OV9655 register address.
+  * @param  Data: data to be written to the specific register
+  * @retval 0x00 if write operation is OK.
   *         0xFF if timeout condition occured (device not connected or bus error).
   */
 uint8_t DCMI_SingleRandomWrite(uint8_t Device, uint16_t Addr, uint8_t Data)
 {
   uint32_t timeout = DCMI_TIMEOUT_MAX;
-  
+
 restart1:
   /* Generate the Start Condition */
   I2C_GenerateSTART(I2C1, ENABLE);
@@ -847,13 +847,13 @@ restart1:
   while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT))
   {
     /* If the timeout delay is exeeded, exit with error code */
-    if ((timeout--) == 0) 
+    if ((timeout--) == 0)
       return 0xFF;
   }
-   
+
   /* Send DCMI selcted device slave Address for write */
   I2C_Send7bitAddress(I2C1, Device, I2C_Direction_Transmitter);
- 
+
   /* Test on I2C1 EV6 and clear it */
   timeout = DCMI_TIMEOUT_MAX; /* Initialize timeout value */
   while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
@@ -864,7 +864,7 @@ restart1:
       goto restart1;
     }
   }
- 
+
   /* Send I2C1 location address LSB */
   I2C_SendData(I2C1, (uint8_t)(Addr));
 
@@ -876,9 +876,9 @@ restart1:
     if ((timeout--) == 0)
       return 0xFF;
   }
-  
+
   /* Send Data */
-  I2C_SendData(I2C1, Data);    
+  I2C_SendData(I2C1, Data);
 
   /* Test on I2C1 EV8 and clear it */
   timeout = DCMI_TIMEOUT_MAX; /* Initialize timeout value */
@@ -887,21 +887,21 @@ restart1:
     /* If the timeout delay is exeeded, exit with error code */
     if ((timeout--) == 0)
       return 0xFF;
-  }  
- 
+  }
+
   /* Send I2C1 STOP Condition */
   I2C_GenerateSTOP(I2C1, ENABLE);
-  
+
   /* If operation is OK, return 0 */
   return 0;
 }
 
 /**
-  * @brief  Reads a byte from a specific Camera register 
+  * @brief  Reads a byte from a specific Camera register
   * @param  Device: OV9655 write address.
-  * @param  Addr: OV9655 register address. 
-  * @retval data read from the specific register or 0xFF if timeout condition 
-  *         occured. 
+  * @param  Addr: OV9655 register address.
+  * @retval data read from the specific register or 0xFF if timeout condition
+  *         occured.
   */
 uint8_t DCMI_SingleRandomRead(uint8_t Device, uint16_t Addr)
 {
@@ -917,18 +917,18 @@ uint8_t DCMI_SingleRandomRead(uint8_t Device, uint16_t Addr)
   {
     /* If the timeout delay is exeeded, exit with error code */
     if ((timeout--) == 0) return 0xFF;
-  } 
-  
+  }
+
   /* Send DCMI selcted device slave Address for write */
   I2C_Send7bitAddress(I2C1, Device, I2C_Direction_Transmitter);
- 
+
   /* Test on I2C1 EV6 and clear it */
   timeout = DCMI_TIMEOUT_MAX; /* Initialize timeout value */
   while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
   {
     /* If the timeout delay is exeeded, exit with error code */
     if ((timeout--) == 0) return 0xFF;
-  } 
+  }
 
   /* Send I2C1 location address LSB */
   I2C_SendData(I2C1, (uint8_t)(Addr));
@@ -939,33 +939,33 @@ uint8_t DCMI_SingleRandomRead(uint8_t Device, uint16_t Addr)
   {
     /* If the timeout delay is exeeded, exit with error code */
     if ((timeout--) == 0) return 0xFF;
-  } 
-  
+  }
+
   /* Clear AF flag if arised */
-  I2C1->SR1 |= (uint16_t)0x0400; 
+  I2C1->SR1 |= (uint16_t)0x0400;
 
   /* Generate the Start Condition */
   I2C_GenerateSTART(I2C1, ENABLE);
-  
+
   /* Test on I2C1 EV6 and clear it */
   timeout = DCMI_TIMEOUT_MAX; /* Initialize timeout value */
   while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT))
   {
     /* If the timeout delay is exeeded, exit with error code */
     if ((timeout--) == 0) return 0xFF;
-  } 
-  
+  }
+
   /* Send DCMI selcted device slave Address for write */
   I2C_Send7bitAddress(I2C1, Device, I2C_Direction_Receiver);
-   
+
   /* Test on I2C1 EV6 and clear it */
   timeout = DCMI_TIMEOUT_MAX; /* Initialize timeout value */
   while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED))
   {
     /* If the timeout delay is exeeded, exit with error code */
     if ((timeout--) == 0) return 0xFF;
-  }  
- 
+  }
+
   /* Prepare an NACK for the next data received */
   I2C_AcknowledgeConfig(I2C1, DISABLE);
 
@@ -975,8 +975,8 @@ uint8_t DCMI_SingleRandomRead(uint8_t Device, uint16_t Addr)
   {
     /* If the timeout delay is exeeded, exit with error code */
     if ((timeout--) == 0) return 0xFF;
-  }   
-    
+  }
+
   /* Prepare Stop after receiving data */
   I2C_GenerateSTOP(I2C1, ENABLE);
 
@@ -989,6 +989,6 @@ uint8_t DCMI_SingleRandomRead(uint8_t Device, uint16_t Addr)
 
 /**
   * @}
-  */ 
+  */
 
 /*********** Portions COPYRIGHT 2012 Embest Tech. Co., Ltd.*****END OF FILE****/

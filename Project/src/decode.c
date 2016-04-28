@@ -1,39 +1,39 @@
 /**
-  ******************************************************************************
-  * @file    LibJPEG/LibJPEG_Encoding/Src/decode.c 
-  * @author  MCD Application Team
-  * @version V1.0.3
-  * @date    18-November-2015
-  * @brief   This file contain the decompress method.
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; COPYRIGHT(c) 2015 STMicroelectronics</center></h2>
-  *
-  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
-  * You may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at:
-  *
-  *        http://www.st.com/software_license_agreement_liberty_v2
-  *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  *
-  ******************************************************************************
-  */
+******************************************************************************
+* @file    LibJPEG/LibJPEG_Encoding/Src/decode.c
+* @author  MCD Application Team
+* @version V1.0.3
+* @date    18-November-2015
+* @brief   This file contain the decompress method.
+******************************************************************************
+* @attention
+*
+* <h2><center>&copy; COPYRIGHT(c) 2015 STMicroelectronics</center></h2>
+*
+* Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+* You may not use this file except in compliance with the License.
+* You may obtain a copy of the License at:
+*
+*        http://www.st.com/software_license_agreement_liberty_v2
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*
+******************************************************************************
+*/
 
 /* Includes ------------------------------------------------------------------*/
 #include "decode.h"
 
 /* Private typedef -----------------------------------------------------------*/
-  /* This struct contains the JPEG decompression parameters */
-  struct jpeg_decompress_struct cinfo;
-  /* This struct represents a JPEG error handler */
-  struct jpeg_error_mgr jerr;
-  
+/* This struct contains the JPEG decompression parameters */
+struct jpeg_decompress_struct cinfo;
+/* This struct represents a JPEG error handler */
+struct jpeg_error_mgr jerr;
+
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -41,28 +41,28 @@
 /* Private functions ---------------------------------------------------------*/
 
 /**
-  * @brief  Jpeg Decode
-  * @param  callback: line decoding callback
-  * @param  file1:    pointer to the jpg file
-  * @param  width:    image width
-  * @param  buff:     pointer to the image line    
-  * @retval None
-  */
+* @brief  Jpeg Decode
+* @param  callback: line decoding callback
+* @param  file1:    pointer to the jpg file
+* @param  width:    image width
+* @param  buff:     pointer to the image line
+* @retval None
+*/
 void jpeg_decode(FIL *file, uint32_t width, uint8_t * buff, uint8_t (*callback)(uint8_t*, uint32_t))
-{ 
-    
+{
+
   /* Decode JPEG Image */
   JSAMPROW buffer[2] = {0}; /* Output row buffer */
   uint32_t row_stride = 0; /* physical row width in image buffer */
-  
+
   buffer[0] = buff;
-	
+
   /* Step 1: allocate and initialize JPEG decompression object */
   cinfo.err = jpeg_std_error(&jerr);
 
-  /* Initialize the JPEG decompression object */  
+  /* Initialize the JPEG decompression object */
   jpeg_create_decompress(&cinfo);
-  
+
   jpeg_stdio_src (&cinfo, file);
 
   /* Step 3: read image parameters with jpeg_read_header() */
@@ -79,7 +79,7 @@ void jpeg_decode(FIL *file, uint32_t width, uint8_t * buff, uint8_t (*callback)(
   while (cinfo.output_scanline < cinfo.output_height)
   {
     (void) jpeg_read_scanlines(&cinfo, buffer, 1);
-    
+
     /* TBC */
     if (callback(buffer[0], row_stride) != 0)
     {
@@ -92,7 +92,7 @@ void jpeg_decode(FIL *file, uint32_t width, uint8_t * buff, uint8_t (*callback)(
 
   /* Step 7: Release JPEG decompression object */
   jpeg_destroy_decompress(&cinfo);
-    
+
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -771,6 +771,7 @@ static void LSM303DLHC_LowLevel_Init(void)
   GPIO_InitTypeDef GPIO_InitStructure;
   EXTI_InitTypeDef EXTI_InitStructure;
   I2C_InitTypeDef  I2C_InitStructure;
+  NVIC_InitTypeDef NVIC_InitStructure;
 
   /* Enable the I2C periph */
   RCC_APB1PeriphClockCmd(LSM303DLHC_I2C_CLK, ENABLE);
@@ -847,6 +848,22 @@ static void LSM303DLHC_LowLevel_Init(void)
 
   GPIO_InitStructure.GPIO_Pin = LSM303DLHC_I2C_INT2_PIN;
   GPIO_Init(LSM303DLHC_I2C_INT2_GPIO_PORT, &GPIO_InitStructure);
+
+  SYSCFG_EXTILineConfig(LSM303DLHC_I2C_INT1_EXTI_PORT_SOURCE, LSM303DLHC_I2C_INT1_EXTI_PIN_SOURCE);
+
+  EXTI_InitStructure.EXTI_Line    = LSM303DLHC_I2C_INT1_EXTI_LINE;
+  EXTI_InitStructure.EXTI_Mode    = EXTI_Mode_Interrupt;
+  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
+  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+
+  EXTI_Init(&EXTI_InitStructure);
+
+  NVIC_InitStructure.NVIC_IRQChannel = LSM303DLHC_I2C_INT1_EXTI_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x01;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority        = 0x01;
+  NVIC_InitStructure.NVIC_IRQChannelCmd                = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+
 }
 
 #ifdef USE_DEFAULT_TIMEOUT_CALLBACK

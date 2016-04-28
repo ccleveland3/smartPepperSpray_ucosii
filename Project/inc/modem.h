@@ -13,5 +13,7 @@ void Modem_USART1_IRQ(void);
 
 void smsSend(void);
 void pictureSend(const char* imageFileName, uint8_t * inBuff, uint8_t * outBuff);
+void gpsReceive(void);
+void gpsUpdate(void);
 
 #endif
