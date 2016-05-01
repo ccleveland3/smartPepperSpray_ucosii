@@ -706,6 +706,9 @@ uint8_t I2C_WriteDeviceRegister(uint8_t DeviceAddr, uint8_t RegisterAddr, uint8_
   IOE_TimeOut = 2 * TIMEOUT_MAX;
   while ((!I2C_GetFlagStatus(IOE_I2C,I2C_FLAG_BTF)))
   {
+    if (IOE_TimeOut-- == 0) {
+      return(IOE_TimeoutUserCallback());
+    }
   }
 
   /* Send STOP Condition */

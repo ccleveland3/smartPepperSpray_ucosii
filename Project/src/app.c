@@ -50,6 +50,7 @@ static  OS_STK         App_ModemTaskStk[APP_TASK_MODEM_STK_SIZE];
 static  OS_EVENT      *SDMutex      = NULL;
         OS_EVENT      *emergencySem = NULL;
 static  OS_EVENT      *modemSem     = NULL;
+        OS_EVENT      *uartRecvSem  = NULL;
 static  OS_TMR        *timerPtr     = NULL;
 
 static  volatile uint8_t emergencyState = STOP_UPDATES;
@@ -642,7 +643,7 @@ static  void  App_TaskStart (void *p_arg)
     {
       emergencyState = SEND_UPDATES;
       //TODO: Tell the modem to send data + text + GPS updats
-      if(!OSSemPost(modemSem)) {while(1);}
+      if(OSSemPost(modemSem) != OS_ERR_NONE) {while(1);}
 
       // Display KeyPad to enter stop PIN
       waitForCorrectPIN();
@@ -669,7 +670,7 @@ static  void  App_ModemTask (void *p_arg)
     // Wait for main task to post semaphore which lets this modem task know it
     // is time to send the photo+gps coordinates to exosite and a send text
     // message with links and coordinates, timeout 5 seconds
-    OSSemPend(modemSem, 50, &perr);
+    OSSemPend(modemSem, 5000, &perr);
 
     if(perr == OS_ERR_TIMEOUT)
     {
@@ -1168,6 +1169,13 @@ static  void  App_EventCreate (void)
   if(modemSem == NULL) {while(1);}
 #if (OS_EVENT_EN) && (OS_EVENT_NAME_EN > 0u)
   OSEventNameSet(modemSem, "modemSem", &perr);
+  if(perr != OS_ERR_NONE) {while(1);}
+#endif
+
+  uartRecvSem = OSSemCreate (0);
+  if(uartRecvSem == NULL) {while(1);}
+#if (OS_EVENT_EN) && (OS_EVENT_NAME_EN > 0u)
+  OSEventNameSet(uartRecvSem, "uartRecvSem", &perr);
   if(perr != OS_ERR_NONE) {while(1);}
 #endif
 

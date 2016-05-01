@@ -10,6 +10,14 @@
 
 #define OUT_FILE_NAME "base64.txt"
 
+#define RECV_TIMEOUT            0
+#define RECV_ERR_NONE           1
+#define RECV_ERROR_STR          2
+#define RECV_NO_MEMORY          3
+#define TRAN_FAIL               4
+
+#define STD_TIMEOUT            500
+
 static const char rx_error[] = "ERROR\r";
 
 static volatile char rx_buffer[RX_BUFFER_SIZE] = {0};
@@ -20,17 +28,18 @@ char rx_line[RX_BUFFER_SIZE] = {0};
 char rx_response[RX_BUFFER_SIZE] = {0};
 
 static void modemSend(const char *str, uint8_t literalPlus);
-static int waitResponse(const char *target, int numChar);
-static int modemGetNextLine(void);
+static int waitResponse(const char *target, int numChar, int timeout_ms);
+static int modemGetNextLine(int timeout_ms);
 static int parseGPSData(void);
-static int getResponse(const char *start, const char *end);
+static int getResponse(const char *start, const char *end, int timeout_ms);
 static int openExositeSocket(int contentLength, char *buffer);
+static int modemSendAndWaitResp(const char *cmd, const char *resp, int numChar, int timeout_ms, int maxRepeat);
 void smsSend(void);
 void setupGPS(void);
 void pictureSend(const char* imageFileName, uint8_t * inBuff, uint8_t * outBuff);
 
 struct Gps {
-  char utc[10];       //"hhmmss.ss"
+  char utc[11];       //"hhmmss.sss"
   char googleLatitude[12];  //"+dd.ddddddd"
   char googleLongitude[13]; //"-ddd.ddddddd"
   char exositeLatitude[11]; //"+ddmm.mmmm"
@@ -53,10 +62,12 @@ const char base64[64] = {\
       'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',\
 	't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7',\
           '8', '9', '+', '/'};
-extern FATFS filesystem;
-FIL inFile, outFile;
-extern char phoneNum[];
 
+extern char      phoneNum[];
+extern OS_EVENT *uartRecvSem;
+extern FATFS     filesystem;
+
+FIL inFile, outFile;
 
 struct Gps lastGPS = {"hhmmss.ss", "+dd.ddddddd", "-ddd.ddddddd", "+ddmm.mmmm",\
   "-dddmm.mmmm", "x.x", "xxxx.x",  "x", "ddd.mm", "xxxx.x", "xxxx.x", "ddmmyy",\
@@ -154,31 +165,29 @@ int modemInit()
   OSTimeDlyHMSM(0, 0, 2, 0);
   GPIO_SetBits(GPIOA, GPIO_Pin_8);
   OSTimeDlyHMSM(0, 0, 2, 0);
-  GPIO_ResetBits(GPIOA, GPIO_Pin_8);
+  //GPIO_ResetBits(GPIOA, GPIO_Pin_8);
 
   /* Turn off echo */
-  modemSend("XATE0\r\n", FALSE);
-  if(!waitResponse("OK",2))
+  if(modemSendAndWaitResp("ATE0\r\n", "OK", 2, STD_TIMEOUT, 5) != RECV_ERR_NONE)
   {
-    modemSend("ATE0\r\n", FALSE);
-    if(!waitResponse("OK",2))
+    //  /* Turn Modem on */
+    GPIO_ResetBits(GPIOA, GPIO_Pin_8);
+    OSTimeDlyHMSM(0, 0, 2, 0);
+    GPIO_SetBits(GPIOA, GPIO_Pin_8);
+    OSTimeDlyHMSM(0, 0, 2, 0);
+   // GPIO_ResetBits(GPIOA, GPIO_Pin_8);
+
+    if(modemSendAndWaitResp("ATE0\r\n", "OK", 2, STD_TIMEOUT, 5) != RECV_ERR_NONE)
     {
       return 0;
     }
   }
-  //    modemSend("AT$GPSSLSR=2,3\r\n", FALSE);
-  // waitResponse("OK",2);
-  //  modemSend("AT$GPSP=1", FALSE);
-  //  waitResponse("OK",2);
-  //  modemSend("AT$GPSNMUN=3,1,1,1,1,1,1\r\n", FALSE);
-  //  waitResponse("CONNECT",2);
-  //  modemSend("+++\r\n", FALSE);
-  //  waitResponse("OK",2);
-  //  modemSend("AT$GPSACP\r\n", FALSE);
-  //  waitResponse("OK",2);
+  modemSendAndWaitResp("AT+CSQ\r\n", "OK", 2, STD_TIMEOUT, 5);
+  modemSendAndWaitResp("AT#SCFG=3,3,300,90,600,50\r\n", "OK", 2, STD_TIMEOUT, 5);
+  modemSendAndWaitResp("AT+CGDCONT=3,\"IP\",\"VZWINTERNET\"\r\n", "OK", 2, STD_TIMEOUT, 5);
+  modemSendAndWaitResp("AT#SGACT=3,1\r\n", "OK", 2, STD_TIMEOUT*5, 5);
+  // modemSendAndWaitResp("AT+CGREG\r\n", "OK", 2, STD_TIMEOUT, 5);
 
-
-  //smsSend();
   setupGPS();
 
   return 1;
@@ -193,13 +202,11 @@ void smsSend()
   parseGPSData();
 
   OSTimeDlyHMSM(0, 0, 0, 50);
-  modemSend("AT+CMGF=1\r\n", FALSE);
-  waitResponse("OK",2);
-  OSTimeDlyHMSM(0, 0, 0, 50);
+  modemSendAndWaitResp("AT+CMGF=1\r\n", "OK", 2, STD_TIMEOUT, 5);
   modemSend("AT+CMGS=\"+", FALSE);
   modemSend(phoneNum, FALSE);
   modemSend("\"\r\n", FALSE);
-  OSTimeDlyHMSM(0, 0, 0, 50);
+  OSTimeDlyHMSM(0, 0, 0, 250);
 
   modemSend("Help! ", FALSE);
   if(gpsValid == TRUE)
@@ -217,22 +224,20 @@ void smsSend()
   modemSend(" ONLY A TEST\x1A", FALSE); //12, total 147
 
   //waitResponse("+CMGS:xx",2);
-  waitResponse("OK",2);
+  waitResponse("OK",2, 500);
 }
 
 
 void setupGPS()
 {
-  modemSend("AT$GPSAT=1\r\n", FALSE);
   //Ok if modem responds with ERROR, this means GPS is already powering the GPS
   //antenna
-  waitResponse("OK",2);
+  modemSendAndWaitResp("AT$GPSAT=1\r\n", "OK", 2, STD_TIMEOUT, 5);
 
-  modemSend("AT$GPSP=1\r\n", FALSE);
   //Ok if modem responds with ERROR, this means GPS is already powered
-  waitResponse("OK",2);
+  modemSendAndWaitResp("AT$GPSP=1\r\n",  "OK", 2, STD_TIMEOUT, 5);
 
-  //Get first location
+  // Try to get the first location
   parseGPSData();
 }
 
@@ -251,7 +256,7 @@ static int parseGPSData()
 
   modemSend("AT$GPSACP\r\n", FALSE);
 
-  if(getResponse("$GPSACP:", "OK\r"))
+  if(getResponse("$GPSACP:", "OK\r", STD_TIMEOUT) == RECV_ERR_NONE)
   {
     if(sscanf(rx_response + 9, \
       "%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^\r]", \
@@ -580,12 +585,11 @@ void pictureSend(const char* imageFileName, uint8_t * inBuff, uint8_t * outBuff)
 
 
           //OSTimeDlyHMSM(0, 0, 1, 0);
-          waitResponse("Content-Length: 0", 17);
-          //modemSend("+++\n", FALSE);
-          waitResponse("NO CARRIER", 10);
+          waitResponse("Content-Length: 0", 17, 10000);
+          modemSend("+++\n", FALSE);
+          waitResponse("NO CARRIER", 10, STD_TIMEOUT*5);
 
-          modemSend("AT#SH=3\r\n", FALSE);
-          waitResponse("OK", 2);
+          modemSendAndWaitResp("AT#SH=3\r\n", "OK", 2, STD_TIMEOUT, 5);
 
           /* Close the base64 file */
           f_close(&outFile);
@@ -599,13 +603,15 @@ void pictureSend(const char* imageFileName, uint8_t * inBuff, uint8_t * outBuff)
 static int openExositeSocket(int contentLength, char *buffer)
 {
   // Open the socket
-  modemSend("AT#SGACT=3,1\r\n", FALSE);
-  //Okay if it returns error, the PDP context may already be active.
-  waitResponse("OK", 2);
+  // Okay if it returns error, the PDP context may already be active.
+  modemSendAndWaitResp("AT#SGACT=3,1\r\n", "OK", 2, STD_TIMEOUT, 5);
 
-  modemSend("AT#SD=3,0,80,\"m2.exosite.com\",0\r\n", FALSE);
-  if(!waitResponse("CONNECT", 7))
+
+  if( modemSendAndWaitResp("AT#SD=3,0,80,\"m2.exosite.com\",0\r\n", "CONNECT",
+                           7, STD_TIMEOUT*5, 5) != RECV_ERR_NONE)
+  {
     return FALSE;
+  }
 
   modemSend("POST /onep:v1/stack/alias HTTP/1.1\x0A", FALSE);
   modemSend("Host: m2.exosite.com\x0A", FALSE);
@@ -629,19 +635,19 @@ void gpsUpdate()
   if(gpsValid && openExositeSocket(contentLength, data))
   {
     sprintf(data, "GPSdata=%s_%s", lastGPS.exositeLatitude, lastGPS.exositeLongitude);
-    modemSend(data, TRUE);
+    modemSend(data, FALSE);
 
-    waitResponse("Content-Length: 0", 17);
-    //modemSend("+++\n", FALSE);
-    waitResponse("NO CARRIER", 10);
+    waitResponse("Content-Length: 0", 17, STD_TIMEOUT*10);
+    modemSend("+++\r", FALSE);
+    waitResponse("NO CARRIER", 10, STD_TIMEOUT*5);
 
-    modemSend("AT#SH=3\r\n", FALSE);
-    waitResponse("OK", 2);
+    modemSendAndWaitResp("AT#SH=3\r\n", "OK", 2, STD_TIMEOUT, 5);
   }
 }
 
 static void modemSend(const char *str, uint8_t literalPlus)
 {
+  static int first = TRUE;
   int i;
   for(i = 0; str[i] != 0; i++)
   {
@@ -660,6 +666,12 @@ static void modemSend(const char *str, uint8_t literalPlus)
       USART_SendData(USART1, (uint8_t) 'B');
     }
 
+    if(first == TRUE)
+    {
+      first = FALSE;
+      OSTimeDlyHMSM(0, 0, 0, 10);
+    }
+
     /* Loop until the end of transmission */
     while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET)
     {}
@@ -667,19 +679,41 @@ static void modemSend(const char *str, uint8_t literalPlus)
   }
 }
 
-static int getResponse(const char *start, const char *end)
+static int modemSendAndWaitResp(const char *cmd, const char *resp, int numChar, int timeout_ms, int maxRepeat)
+{
+  int i;
+
+  // Transmit fails to send if user sets maxRepeat <= 0
+  int retval = TRAN_FAIL;
+
+  for(i = 0; i < maxRepeat; i++)
+  {
+    modemSend(cmd, FALSE);
+    retval = waitResponse(resp, numChar, timeout_ms);
+    if(retval != RECV_TIMEOUT)
+    {
+      return retval;
+    }
+  }
+  return retval;
+}
+
+static int getResponse(const char *start, const char *end, int timeout_ms)
 {
   int startSize = strlen(start);
-  int endSize   = strlen(end);
+  int endSize    = strlen(end);
   rx_response[0] = (char)NULL;
 
   do {
-    modemGetNextLine();
+    if(modemGetNextLine(timeout_ms) == RECV_TIMEOUT)
+    {
+      return RECV_TIMEOUT;
+    }
   } while(strncmp(rx_line,start,startSize) && strcmp(rx_line,rx_error));
 
   if(strcmp(rx_line,rx_error) == 0)
   {
-    return 0;
+    return RECV_ERROR_STR;
   }
 
   strcpy(rx_response, rx_line);
@@ -687,11 +721,14 @@ static int getResponse(const char *start, const char *end)
   // Keep copying lines until we find the end, an error, or run out of memory
   while(strncmp(rx_line,end,endSize) && strcmp(rx_line,rx_error))
   {
-    modemGetNextLine();
+    if(modemGetNextLine(timeout_ms) == RECV_TIMEOUT)
+    {
+      return RECV_TIMEOUT;
+    }
     if(strlen(rx_response) + strlen(rx_line) > RX_BUFFER_SIZE)
     {
       //Ran out of memory
-      return 0;
+      return RECV_NO_MEMORY;
     }
     else
     {
@@ -701,70 +738,100 @@ static int getResponse(const char *start, const char *end)
 
   if(strcmp(rx_line,rx_error) == 0)
   {
-    return 0;
+    return RECV_ERROR_STR;
   }
-  return 1;
+  return RECV_ERR_NONE;
 }
 
-static int waitResponse(const char *target, int numChar)
+static int waitResponse(const char *target, int numChar, int timeout_ms)
 {
   do{
-    modemGetNextLine();
+    if(modemGetNextLine(timeout_ms) == RECV_TIMEOUT)
+    {
+      return RECV_TIMEOUT;
+    }
   } while(strncmp(rx_line,target,numChar) && strcmp(rx_line,rx_error));
 
   if(strcmp(rx_line,rx_error) == 0)
   {
-    return 0;
+    return RECV_ERROR_STR;
   }
-  return 1;
+  return RECV_ERR_NONE;
 }
 
-static int modemGetNextLine()
+static int modemGetNextLine(int timeout_ms)
 {
+  //
   int lineIndex = 0;
   int in, out; //Temp variables for holding globals that the UART interrupt changes
+  INT8U perr;
+
+  rx_line[0] = (char)NULL;
 
   //Disable UART interrupt while we check the globals it changes
-  USART_ITConfig(USART1, USART_IT_RXNE, DISABLE);
+  //USART_ITConfig(USART1, USART_IT_RXNE, DISABLE);
 
   while( lineIndex == 0 || (rx_line[lineIndex-1] != '\n'))
   {
     in  = rx_in;
     out = rx_out;
 
-    //Wait for more data if there is none
+    // Wait for more data if there is none
     if (in == out)
     {
+      OSSemPend(uartRecvSem, timeout_ms, &perr);
+      in  = rx_in;
+      out = rx_out;
+
+      // Check for pend error combined with no new data
+      if((perr != OS_ERR_NONE) && (in == out))
+      {
+        return RECV_TIMEOUT;
+      }
+
       //Enable interrupt because there is no new data
-      USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
-      do {
-        in  = rx_in;
-        out = rx_out;
-      } while( in == out);
+      //USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
+      //do {
+      //  in  = rx_in;
+      //  out = rx_out;
+      //} while( in == out);
 
       //Disable UART interrupt while we check the globals it changes
-      USART_ITConfig(USART1, USART_IT_RXNE, DISABLE);
+      //USART_ITConfig(USART1, USART_IT_RXNE, DISABLE);
     }
-    rx_line[lineIndex] = rx_buffer[rx_out];
-    lineIndex++;
-    rx_out = (rx_out+1) % RX_BUFFER_SIZE;
+    else
+    {
+      rx_line[lineIndex] = rx_buffer[rx_out];
+      lineIndex++;
+      rx_out = (rx_out+1) % RX_BUFFER_SIZE;
+    }
   }  //while
 
-  USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
+  //USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
 
   rx_line[lineIndex-1] = 0; //Strip off the newline and terminate the string
 
-  return lineIndex;
+  return RECV_ERR_NONE;
 }
 
 void Modem_USART1_IRQ()
 {
   if(USART_GetITStatus(USART1, USART_IT_RXNE) == SET)
   {
+    // We may need to read more than one byte in the FIFO.
     while((USART_GetFlagStatus(USART1, USART_FLAG_RXNE) == SET) && (RX_CIRC_INC(rx_in) != rx_out))
     {
       rx_buffer[rx_in] = (char)USART_ReceiveData(USART1);
-      rx_in = RX_CIRC_INC(rx_in);
+
+      // Ignore any non-ASCII and control characters by not incrementing the
+      // index rx_in.  Non-ASCII characters are probably garbage and we are not
+      // expecting any control characters from this specific modem.
+      if((rx_buffer[rx_in] >= ' ' && rx_buffer[rx_in] <= '~' )||
+         rx_buffer[rx_in] == '\n' || rx_buffer[rx_in] == '\r')
+      {
+        rx_in = RX_CIRC_INC(rx_in);
+        if(OSSemPost(uartRecvSem) != OS_ERR_NONE) {while(1);}
+      }
     }
   }
 }
