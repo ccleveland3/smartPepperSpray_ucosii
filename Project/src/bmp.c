@@ -63,6 +63,7 @@ static uint8_t bmp_header[54]={
 };
 #endif
 
+extern OS_EVENT *SDMutex;
 
 /* Private function prototypes -----------------------------------------------*/
 static int32_t set_pic_count(void);
@@ -86,10 +87,13 @@ int32_t Capture_Image_TO_Bmp(void)
   //char  file_str[30] = {0};
   FIL file;        /* File object */
 
+  INT8U perr;
+  OSMutexPend(SDMutex, 0, &perr);
 
   /* mount the filesys */
   if (f_mount(0, &filesys) != FR_OK) {
-    return -1;
+    ret = -1;
+    goto end;
   }
   OSTimeDlyHMSM(0, 0, 0, 10);
 
@@ -98,7 +102,7 @@ int32_t Capture_Image_TO_Bmp(void)
   //ret = f_open(&file, file_str, FA_WRITE | FA_CREATE_ALWAYS);
 	ret = f_open(&file, "image.bmp", FA_WRITE | FA_CREATE_ALWAYS);
   if (ret) {
-    return ret;
+    goto end;
   }
 
 #ifdef BMP_16BIT
@@ -143,6 +147,11 @@ int32_t Capture_Image_TO_Bmp(void)
   ret = f_close(&file);
 
   f_mount(0, NULL);
+end:
+  if(OSMutexPost(SDMutex) != OS_ERR_NONE)
+  {
+    while(1);
+  }
 
   /* statistics the take pictures count */
   pic_counter++;
@@ -173,9 +182,13 @@ static int32_t get_pic_count(void)
   uint32_t bw = 0;
   FIL file;
 
+  INT8U perr;
+  OSMutexPend(SDMutex, 0, &perr);
+
   /* mount the filesys */
   if (f_mount(0, &filesys) != FR_OK) {
-    return -1;
+    ret = -1;
+    goto end;
   }
   OSTimeDlyHMSM(0, 0, 0, 10);
 
@@ -188,18 +201,26 @@ static int32_t get_pic_count(void)
       ret = f_write(&file, &pic_counter, sizeof(uint32_t), &bw);
       f_close(&file);
       f_mount(0, NULL);
-      return pic_counter;
+      ret = pic_counter;
     } else {
       f_close(&file);
       f_mount(0, NULL);
-      return -1;
+      ret = -1;
+      goto end;
     }
   } else {
     ret = f_read(&file, &pic_counter, sizeof(uint32_t), &bw);
     f_close(&file);
     f_mount(0, NULL);
-    return pic_counter;
+    ret = pic_counter;
   }
+
+end:
+  if(OSMutexPost(SDMutex) != OS_ERR_NONE)
+  {
+    while(1);
+  }
+  return ret;
 }
 
 /**
@@ -213,9 +234,13 @@ static int32_t set_pic_count(void)
   uint32_t bw = 0;
   FIL file;
 
+  INT8U perr;
+  OSMutexPend(SDMutex, 0, &perr);
+
   /* mount the filesys */
   if (f_mount(0, &filesys) != FR_OK) {
-    return -1;
+    ret = -1;
+    goto end;
   }
   OSTimeDlyHMSM(0, 0, 0, 10);
 
@@ -224,11 +249,19 @@ static int32_t set_pic_count(void)
     ret = f_write(&file, &pic_counter, sizeof(uint32_t), &bw);
     f_close(&file);
     f_mount(0, NULL);
-    return pic_counter;
+    ret = pic_counter;
   } else {
     f_close(&file);
     f_mount(0, NULL);
-    return -1;
+    ret = -1;
   }
+
+end:
+  if(OSMutexPost(SDMutex) != OS_ERR_NONE)
+  {
+    while(1);
+  }
+
+  return ret;
 }
 /******************* COPYRIGHT 2012 Embest Tech. Co., Ltd. *****END OF FILE****/

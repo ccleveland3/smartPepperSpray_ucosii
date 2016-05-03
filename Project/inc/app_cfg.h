@@ -32,7 +32,7 @@
 #define  APP_TASK_MODEM_PRIO                               4
 #define  OS_TASK_TMR_PRIO                (OS_LOWEST_PRIO - 2)
 
-#define  APP_TASK_START_STK_SIZE                        1024
+#define  APP_TASK_START_STK_SIZE                        2048
 #define  APP_TASK_MODEM_STK_SIZE                        1024
 
 #define  uC_CFG_OPTIMIZE_ASM_EN                 DEF_ENABLED

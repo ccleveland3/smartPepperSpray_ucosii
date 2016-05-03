@@ -47,7 +47,7 @@
 /* Private variables ---------------------------------------------------------*/
 static  OS_STK         App_TaskStartStk[APP_TASK_START_STK_SIZE];
 static  OS_STK         App_ModemTaskStk[APP_TASK_MODEM_STK_SIZE];
-static  OS_EVENT      *SDMutex      = NULL;
+        OS_EVENT      *SDMutex      = NULL;
         OS_EVENT      *emergencySem = NULL;
 static  OS_EVENT      *modemSem     = NULL;
         OS_EVENT      *uartRecvSem  = NULL;
@@ -92,7 +92,7 @@ static void KeyPad(void);
 static uint8_t Touch(uint8_t appFlagMask);
 static uint8_t getKey(char *key);
 uint8_t DCMI_OV9655Config(void);
-void EXTILine0_Config(void);
+void EXTILine0_11_Config(void);
 void DCMI_Config(void);
 void I2C1_Config(void);
 static void Camera(void);
@@ -138,6 +138,8 @@ int  main (void)
 
 void jpeg_test()
 {
+  INT8U perr;
+  OSMutexPend(SDMutex, 0, &perr);
   if (f_mount(0, &filesystem) == FR_OK)
   {
     //printf("could not open filesystem \n\r");
@@ -166,6 +168,10 @@ void jpeg_test()
       }
     }
     f_mount(0, NULL);
+  }
+  if(OSMutexPost(SDMutex) != OS_ERR_NONE)
+  {
+    while(1);
   }
 }
 
@@ -599,10 +605,11 @@ static  void  App_TaskStart (void *p_arg)
   BSP_Init();
   OS_CPU_SysTickInit();
   itInit();
-  EXTILine0_Config();
-  DCMI_Control_IO_Init();
+  EXTILine0_11_Config();
   LCD_Display();
-  //sineWave_init();
+  DCMI_Control_IO_Init();
+
+  sineWave_init();
 
 #if (OS_TASK_STAT_EN > 0)
   /* Determine CPU capacity. */
@@ -633,6 +640,7 @@ static  void  App_TaskStart (void *p_arg)
     OSSemSet( emergencySem, 0, &perr);
     OSSemPend(emergencySem, 0, &perr);
 
+    sineOn();
     CameraCapture();
     jpeg_test();
 
@@ -642,12 +650,14 @@ static  void  App_TaskStart (void *p_arg)
     if((appFlags & EMER_BUTTON) || !cancelImpact())
     {
       emergencyState = SEND_UPDATES;
-      //TODO: Tell the modem to send data + text + GPS updats
+
+      // Tell the modem to send data + text + GPS updats
       if(OSSemPost(modemSem) != OS_ERR_NONE) {while(1);}
 
       // Display KeyPad to enter stop PIN
       waitForCorrectPIN();
     }
+    sineOff();
     emergencyState = STOP_UPDATES;
   }
 }
@@ -661,7 +671,7 @@ static  void  App_ModemTask (void *p_arg)
   //LCD_DisplayStringLine(4, (uint8_t *)"Modem Init");
   if(!modemInit())
   {
-  //  LCD_DisplayStringLine(4, (uint8_t *)"Modem Init Failed!");
+    LCD_DisplayStringLine(4, (uint8_t *)"Modem Init Failed!");
     while(1);
   }
 
@@ -684,7 +694,7 @@ static  void  App_ModemTask (void *p_arg)
     }
     else if(perr == OS_ERR_NONE)
     {
-      //pictureSend("image.jpg", modemBuffer1, modemBuffer2);
+      pictureSend("image.jpg", modemBuffer1, modemBuffer2);
       smsSend();
     }
   }
@@ -737,7 +747,7 @@ static void CameraCapture()
   capture_Flag = ENABLE;
 }
 
-void EXTILine0_Config(void)
+void EXTILine0_11_Config(void)
 {
 
   GPIO_InitTypeDef   GPIO_InitStructure;
@@ -747,6 +757,8 @@ void EXTILine0_Config(void)
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
   /* Enable SYSCFG clock */
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+  /* Enable GPIOD clock */
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
 
   /* Configure PA0 pin as input floating */
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
@@ -754,18 +766,38 @@ void EXTILine0_Config(void)
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
 
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
+  GPIO_Init(GPIOD, &GPIO_InitStructure);
+
   /* Connect EXTI Line0 to PA0 pin */
   SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, EXTI_PinSource0);
+
+  /* Connect EXTI Line11 to PD11 pin */
+  SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOD, EXTI_PinSource11);
 
   /* Configure EXTI Line0 */
   EXTI_InitStructure.EXTI_Line = EXTI_Line0;
   EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
+  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
+  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+  EXTI_Init(&EXTI_InitStructure);
+
+  /* Configure EXTI Line11 */
+  EXTI_InitStructure.EXTI_Line = EXTI_Line11;
+  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
   EXTI_InitStructure.EXTI_LineCmd = ENABLE;
   EXTI_Init(&EXTI_InitStructure);
 
   /* Enable and set EXTI Line0 Interrupt to the lowest priority */
   NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x01;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x01;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+
+  /* Enable and set EXTI Line0 Interrupt to the lowest priority */
+  NVIC_InitStructure.NVIC_IRQChannel = EXTI15_10_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x01;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x01;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
@@ -852,7 +884,7 @@ static uint8_t Touch(uint8_t appFlagMask)
   //int tpx_sum = 0,tpy_sum = 0;
   //uint8_t  status = 0;
   //uint8_t i;
-  char buffer[50];
+  //char buffer[50];
   //TS_STATE *state = NULL;
 
   OSTimeDlyHMSM(0, 0, 0, 50);
@@ -864,10 +896,10 @@ static uint8_t Touch(uint8_t appFlagMask)
     TP_State = IOE_TS_GetState();
     if(TP_State->TouchDetected)
     {
-      sprintf(buffer,"                  ");
-      LCD_DisplayStringLine(LCD_LINE_9, (uint8_t *)buffer);
-      sprintf(buffer,"(x=%d,y=%d)", TP_State->X, TP_State->Y);
-      LCD_DisplayStringLine(LCD_LINE_9, (uint8_t *)buffer);
+      //sprintf(buffer,"                  ");
+      //LCD_DisplayStringLine(LCD_LINE_9, (uint8_t *)buffer);
+      //sprintf(buffer,"(x=%d,y=%d)", TP_State->X, TP_State->Y);
+      //LCD_DisplayStringLine(LCD_LINE_9, (uint8_t *)buffer);
       return TRUE;
     }
     else
@@ -953,11 +985,11 @@ static void KeyPad()
   LCD_DisplayChar(x_pos5,y_pos5,'9');
 
   LCD_DrawRect(x_pos0,y_pos6,height,width);
-  LCD_DisplayChar(x_pos6,y_pos1,'*');
+  LCD_DisplayChar(x_pos6,y_pos1,'<');
   LCD_DrawRect(x_pos2,y_pos6,height,width);
   LCD_DisplayChar(x_pos6,y_pos3,'0');
   LCD_DrawRect(x_pos4,y_pos6,height,width);
-  LCD_DisplayChar(x_pos6,y_pos5,'#');
+  LCD_DisplayChar(x_pos6,y_pos5,'E');
 
   //volume button
   //LCD_DrawRect(x_pos7,y_pos4,height,width);

@@ -8,5 +8,7 @@
 #define __SOUND_OUTPUT_H
 
 void sineWave_init(void);
+void sineOn(void);
+void sineOff(void);
 
 #endif

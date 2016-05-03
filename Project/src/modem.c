@@ -65,6 +65,7 @@ const char base64[64] = {\
 
 extern char      phoneNum[];
 extern OS_EVENT *uartRecvSem;
+extern OS_EVENT *SDMutex;
 extern FATFS     filesystem;
 
 FIL inFile, outFile;
@@ -320,6 +321,7 @@ void pictureSend(const char* imageFileName, uint8_t * inBuff, uint8_t * outBuff)
 {
   int contentLength = 0;
   int numPlus = 0;
+  INT8U perr;
 
   // Number of bytes read from the JPEG file during the last f_read call
   uint32_t bytesRead      = 0;
@@ -344,6 +346,8 @@ void pictureSend(const char* imageFileName, uint8_t * inBuff, uint8_t * outBuff)
   uint8_t unEncodedByte1  = 0;
   uint8_t unEncodedByte2  = 0;
   uint8_t numUnEncoded    = 0;
+
+  OSMutexPend(SDMutex, 0, &perr);
 
   if(f_mount(0, &filesystem) == FR_OK)
   {
@@ -499,9 +503,8 @@ void pictureSend(const char* imageFileName, uint8_t * inBuff, uint8_t * outBuff)
                     // Something terrible happened
                     f_close(&inFile);
                     f_close(&outFile);
-                    f_mount(0, NULL);
 
-                    return;
+                    goto end;
                   }
                 }
 
@@ -524,8 +527,8 @@ void pictureSend(const char* imageFileName, uint8_t * inBuff, uint8_t * outBuff)
           {
             f_close(&inFile);
             f_close(&outFile);
-            f_mount(0, NULL);
-            return;
+
+            goto end;
           }
         }
 
@@ -548,7 +551,11 @@ void pictureSend(const char* imageFileName, uint8_t * inBuff, uint8_t * outBuff)
           }
 
           if(!openExositeSocket(contentLength, (char *)outBuff))
-            return;
+          {
+            f_close(&outFile);
+
+            goto end;
+          }
 
           if(gpsValid)
           {
@@ -578,8 +585,7 @@ void pictureSend(const char* imageFileName, uint8_t * inBuff, uint8_t * outBuff)
             else
             {
               f_close(&outFile);
-              f_mount(0, NULL);
-              return;
+              goto end;
             }
           }
 
@@ -596,7 +602,14 @@ void pictureSend(const char* imageFileName, uint8_t * inBuff, uint8_t * outBuff)
         }
       }
     }
+
+  end:
     f_mount(0, NULL);
+
+    if(OSMutexPost(SDMutex) != OS_ERR_NONE)
+    {
+      while(1);
+    }
   }
 }
 

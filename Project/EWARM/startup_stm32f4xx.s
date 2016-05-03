@@ -140,7 +140,7 @@ __vector_table
         DCD     BSP_IntHandlerUSART1              ;USART1_IRQHandler ;USART1
         DCD     BSP_IntHandlerUSART2              ;USART2_IRQHandler ; USART2
         DCD     USART3_IRQHandler                 ; USART3
-        DCD     BSP_IntHandlerEXTI15_10           ;EXTI15_10_IRQHandler
+        DCD     BSP_IntHandlerEXTI15_10           ; EXTI15_10_IRQHandler
         DCD     RTC_Alarm_IRQHandler              ; RTC Alarm (A and B) through EXTI Line
         DCD     OTG_FS_WKUP_IRQHandler            ; USB OTG FS Wakeup through EXTI line
         DCD     TIM8_BRK_TIM12_IRQHandler         ; TIM8 Break and TIM12

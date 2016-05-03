@@ -24,6 +24,7 @@ void itInit()
   BSP_IntVectSet(BSP_INT_ID_EXTI0, Button_Handler);
   BSP_IntVectSet(BSP_INT_ID_USART1, Modem_USART1_IRQ);
   BSP_IntVectSet(BSP_INT_ID_EXTI4, LSM303_Acc_ISR);
+  BSP_IntVectSet(BSP_INT_ID_EXTI15_10, Button_Handler);
 
   //  BSP_IntVectSet(BSP_INT_ID_EXTI15_10, TouchIRQ);
 }
@@ -37,12 +38,27 @@ void itInit()
 
 void Button_Handler(void)
 {
-  if(EXTI_GetITStatus(EXTI_Line0) != RESET)
+  if(EXTI_GetITStatus(EXTI_Line0) != RESET || EXTI_GetITStatus(EXTI_Line11) != RESET)
   {
-    /* Clear the EXTI line 0 pending bit */
-    EXTI_ClearITPendingBit(EXTI_Line0);
+    // The Blue user button
+    if(EXTI_GetITStatus(EXTI_Line0) != RESET)
+    {
+      /* Clear the EXTI line 0 pending bit */
+      EXTI_ClearITPendingBit(EXTI_Line0);
+    }
+
+    // The red pepper spray button
+    if(EXTI_GetITStatus(EXTI_Line11) != RESET)
+    {
+      /* Clear the EXTI line 11 pending bit */
+      EXTI_ClearITPendingBit(EXTI_Line11);
+    }
+
     appFlags |= EMER_BUTTON;
-    if(OSSemPost(emergencySem) != OS_ERR_NONE) {while(1);}
+    if(emergencySem != NULL)
+    {
+      if(OSSemPost(emergencySem) != OS_ERR_NONE) {while(1);}
+    }
     //KeyPressFlg = 1;
   }
 }
@@ -76,6 +92,6 @@ void LSM303_Acc_ISR()
     appFlags |= EMER_IMPACT;
 
     if(OSSemPost(emergencySem) != OS_ERR_NONE) {while(1);}
-   // KeyPressFlg = 1;
+    // KeyPressFlg = 1;
   }
 }
